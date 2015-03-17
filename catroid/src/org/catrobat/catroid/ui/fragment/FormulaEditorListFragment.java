@@ -96,7 +96,9 @@ public class FormulaEditorListFragment extends SherlockListFragment implements D
 			R.string.formula_editor_sensor_compass_direction, R.string.formula_editor_sensor_x_inclination,
 			R.string.formula_editor_sensor_y_inclination, R.string.formula_editor_sensor_loudness,
 			R.string.formula_editor_sensor_face_detected, R.string.formula_editor_sensor_face_size,
-			R.string.formula_editor_sensor_face_x_position, R.string.formula_editor_sensor_face_y_position };
+			R.string.formula_editor_sensor_face_x_position, R.string.formula_editor_sensor_face_y_position,
+			R.string.formula_editor_sensor_motion_on_sprite, R.string.formula_editor_sensor_motion_on_stage,
+			R.string.formula_editor_sensor_direction_on_sprite, R.string.formula_editor_sensor_direction_on_stage};
 
 	private String actionBarTitle;
 	private int[] itemsIds;

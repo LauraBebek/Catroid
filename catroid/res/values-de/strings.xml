@@ -505,6 +505,10 @@
   <string name="formula_editor_sensor_face_size">Gesichtsgröße</string>
   <string name="formula_editor_sensor_face_x_position">Gesichtsposition_x</string>
   <string name="formula_editor_sensor_face_y_position">Gesichtsposition_y</string>
+  <string name="formula_editor_sensor_motion_on_sprite">Bewegung_auf_Objekt</string>
+  <string name="formula_editor_sensor_motion_on_stage">Bewegung</string>
+  <string name="formula_editor_sensor_direction_on_sprite">Richtung_Objekt</string>
+  <string name="formula_editor_sensor_direction_on_stage">Richtung</string>
   <string name="formula_editor_object_x">Position_x</string>
   <string name="formula_editor_object_y">Position_y</string>
   <string name="formula_editor_object_ghosteffect">Transparenz</string>
@@ -580,4 +584,10 @@
   <string name="brick_single">Baustein</string>
   <string name="brick_multiple">Bausteine</string>
   <string name="select_device">Wähle Gerät: </string>
+
+  <!-- Video bricks -->
+  <string name="brick_video">Schalte video: </string>
+  <string name="brick_video_on">EIN</string>
+  <string name="brick_video_off">AUS</string>
+  <!--  -->
 </resources>

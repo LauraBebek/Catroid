@@ -23,16 +23,36 @@
 package org.catrobat.catroid.stage;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.PixelFormat;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.backends.android.AndroidAudio;
+import com.badlogic.gdx.backends.android.AndroidFiles;
+import com.badlogic.gdx.backends.android.AndroidGraphics;
+import com.badlogic.gdx.backends.android.AndroidInputFactory;
+import com.badlogic.gdx.backends.android.AndroidNet;
+import com.badlogic.gdx.backends.android.surfaceview.FillResolutionStrategy;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
+import org.catrobat.catroid.camera.CameraPreview;
 import org.catrobat.catroid.common.ScreenValues;
 import org.catrobat.catroid.drone.DroneInitializer;
 import org.catrobat.catroid.facedetection.FaceDetectionHandler;
@@ -66,9 +86,12 @@ public class StageActivity extends AndroidApplication {
 		}
 		stageListener = new StageListener();
 		stageDialog = new StageDialog(this, stageListener, R.style.stage_dialog);
+		stageDialog = new StageDialog(this, stageListener, R.style.stage_dialog);
 		calculateScreenSizes();
 
-		initialize(stageListener, new AndroidApplicationConfiguration());
+		boolean videoNeeded = true;
+		initialize(stageListener, true, videoNeeded);
+
 		if (droneConnection != null) {
 			try {
 				droneConnection.initialise();
@@ -80,6 +103,8 @@ public class StageActivity extends AndroidApplication {
 		}
 
 		stageAudioFocus = new StageAudioFocus(this);
+
+		//GLSurfaceView x = (GLSurfaceView)this.initializeForView(stageListener, true);
 	}
 
 	@Override
@@ -211,4 +236,60 @@ public class StageActivity extends AndroidApplication {
 	public int getLogLevel() {
 		return 0;
 	}
+
+
+	public void initialize (ApplicationListener listener, boolean useGL2, boolean VideoNeeded) {
+
+		if(!VideoNeeded)
+			initialize(listener, useGL2);
+		else {
+			try {
+				requestWindowFeature(Window.FEATURE_NO_TITLE);
+			} catch (Exception ex) {
+				log("AndroidApplication", "Content already displayed, cannot request FEATURE_NO_TITLE", ex);
+			}
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
+			RelativeLayout layout = new RelativeLayout(this);
+			AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
+			//cfg.r = cfg.g = cfg.b = cfg.a = 8;
+			cfg.useGL20 = true;
+			cfg.hideStatusBar = true;
+			cfg.useWakelock = true;
+
+			GLSurfaceView gameView = (GLSurfaceView)initializeForView(listener, true);
+			if(gameView != null)
+				Log.d("Lausi","YES YES YES");
+			//gameView.setEGLConfigChooser( 8, 8, 8, 8, 16, 0 );
+			gameView.getHolder().setFormat( PixelFormat.TRANSLUCENT );
+			//gameView.setZOrderOnTop(true);
+			gameView.setZOrderMediaOverlay(true);
+
+			//setContentView(gameView);
+
+			//layout.addView(gameView);
+			CameraPreview cameraView = new CameraPreview( this );
+			//cameraView.setZOrderOnTop(false);
+			// ...and add it, wrapping the full screen size.
+			//addContentView( cameraView, new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.WRAP_CONTENT,
+																	     //RelativeLayout.LayoutParams.WRAP_CONTENT ));
+
+			layout.addView(cameraView);
+			layout.addView(gameView);
+
+			setContentView(layout);
+
+		}
+		//initalizeForView.... LinearLayout.... add SurfaceView and graphic.view.... ZOrder
+
+	}
+
+	protected LinearLayout.LayoutParams createLayoutParamsForVideo() {
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT);
+		layoutParams.gravity = Gravity.CENTER;
+		return layoutParams;
+	}
+
 }

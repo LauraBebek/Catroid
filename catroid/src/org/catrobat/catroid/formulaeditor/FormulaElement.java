@@ -894,6 +894,12 @@ public class FormulaElement implements Serializable {
 				case FACE_Y_POSITION:
 					ressources |= Brick.FACE_DETECTION;
 					break;
+				case MOTION_ON_SPRITE:
+				case MOTION_ON_STAGE:
+				case DIRECTION_ON_SPRITE:
+				case DIRECTION_ON_STAGE:
+					ressources |= Brick.MOTION_DETECTION;
+					break;
 				default:
 
 			}

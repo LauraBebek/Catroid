@@ -154,6 +154,14 @@ public class InternFormulaKeyboardAdapter {
 				return buildSensor(Sensors.FACE_X_POSITION);
 			case R.string.formula_editor_sensor_face_y_position:
 				return buildSensor(Sensors.FACE_Y_POSITION);
+			case R.string.formula_editor_sensor_motion_on_sprite:
+				return buildSensor(Sensors.MOTION_ON_SPRITE);
+			case R.string.formula_editor_sensor_motion_on_stage:
+				return buildSensor(Sensors.MOTION_ON_STAGE);
+			case R.string.formula_editor_sensor_direction_on_sprite:
+				return buildSensor(Sensors.DIRECTION_ON_SPRITE);
+			case R.string.formula_editor_sensor_direction_on_stage:
+				return buildSensor(Sensors.DIRECTION_ON_STAGE);
 
 			//PERIOD
 			case R.id.formula_editor_keyboard_decimal_mark:

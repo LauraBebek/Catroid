@@ -35,6 +35,18 @@ public class CatroidApplication extends Application {
 	public static final String OS_ARCH = System.getProperty("os.arch");;
 
 	private static boolean parrotLibrariesLoaded = false;
+	private static Application instance;
+
+	public CatroidApplication() {
+		instance = this;
+	}
+
+	public static Application getInstance() {
+		if (null == instance) {
+			instance = new CatroidApplication();
+		}
+		return instance;
+	}
 
 	@Override
 	public void onCreate() {

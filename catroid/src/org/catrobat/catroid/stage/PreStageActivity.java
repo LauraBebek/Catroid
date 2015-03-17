@@ -126,10 +126,25 @@ public class PreStageActivity extends BaseActivity {
 
 		FaceDetectionHandler.resetFaceDedection();
 		if ((requiredResources & Brick.FACE_DETECTION) > 0) {
+			Log.d("Lausi", "PRESTAGE: FD");
 			boolean success = FaceDetectionHandler.startFaceDetection(this);
 			if (success) {
+				Log.d("Lausi", "PRESTAGE: OK");
 				resourceInitialized();
 			} else {
+				Log.d("Lausi", "PRESTAGE: FAIL");
+				resourceFailed();
+			}
+		}
+
+		if ((requiredResources & Brick.MOTION_DETECTION) > 0) {
+			Log.d("Lausi", "PRESTAGE: MOTION");
+			boolean success = CameraManager.getInstance().startCamera();
+			if (success) {
+				Log.d("Lausi", "PRESTAGE: MOTION_OK");
+				resourceInitialized();
+			} else {
+				Log.d("Lausi", "PRESTAGE: MOTION_FAIL");
 				resourceFailed();
 			}
 		}
@@ -289,7 +304,7 @@ public class PreStageActivity extends BaseActivity {
 		requiredResourceCounter--;
 		if (requiredResourceCounter == 0) {
 			Log.d(TAG, "Start Stage");
-
+			Log.d("Lausi", "Start Stage");
 			startStage();
 		}
 	}

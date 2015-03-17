@@ -60,6 +60,8 @@ public interface Brick extends Serializable, Cloneable {
 	//	public static final int BLUETOOTH_ARDUINO = 0x8;
 	int FACE_DETECTION = 0x10;
 
+	int MOTION_DETECTION = 0x40;
+
 	List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence);
 
 	//needed for the Sprite#clone()-Method

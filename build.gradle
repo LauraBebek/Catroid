@@ -29,7 +29,7 @@ check.dependsOn 'pmd'
 ext {
     projectVersion = "0.9"
     featuresEnabled = [
-            "lego_nxt"                          : true,
+            "lego_nxt"                          : false,
             "led_brick"                         : false,
             "vibration_brick"                   : false,
             "backpack"                          : false,
@@ -67,6 +67,7 @@ dependencies {
     androidTestCompile fileTree(include: '*.jar', dir: 'catroidTest/libs')
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.2.1'
     pmd 'net.sourceforge.pmd:pmd:5.1.1'
+    compile files('catroid/libs/opencv_library-2.4.3.jar')
 }
 
 task copyAndroidNatives() {

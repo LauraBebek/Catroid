@@ -50,6 +50,11 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 	private float facePositionX = 0f;
 	private float facePositionY = 0f;
 
+	private float motionOnSprite = 0f;
+	private float motionOnStage = 0f;
+	private float directionOnSprite = 0f;
+	private float directionOnStage = 0f;
+
 	private SensorHandler(Context context) {
 		sensorManager = new SensorManager(
 				(android.hardware.SensorManager) context.getSystemService(Context.SENSOR_SERVICE));
@@ -164,6 +169,15 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 			case FACE_Y_POSITION:
 				return (double) instance.facePositionY;
 
+			case MOTION_ON_SPRITE:
+				return Double.valueOf(instance.motionOnSprite);
+			case MOTION_ON_STAGE:
+				return Double.valueOf(instance.motionOnStage);
+			case DIRECTION_ON_SPRITE:
+				return Double.valueOf(instance.directionOnSprite);
+			case DIRECTION_ON_STAGE:
+				return Double.valueOf(instance.directionOnStage);
+
 			case LOUDNESS:
 				return (double) instance.loudness;
 		}
@@ -209,6 +223,18 @@ public final class SensorHandler implements SensorEventListener, SensorCustomEve
 				break;
 			case FACE_Y_POSITION:
 				instance.facePositionY = event.values[0];
+				break;
+			case MOTION_ON_SPRITE:
+				instance.motionOnSprite = event.values[0];
+				break;
+			case MOTION_ON_STAGE:
+				instance.motionOnStage = event.values[0];
+				break;
+			case DIRECTION_ON_SPRITE:
+				instance.directionOnSprite = event.values[0];
+				break;
+			case DIRECTION_ON_STAGE:
+				instance.directionOnStage = event.values[0];
 				break;
 			default:
 				Log.v(TAG, "Unhandled sensor: " + event.sensor);

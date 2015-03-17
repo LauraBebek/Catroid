@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.SurfaceView;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -52,6 +53,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.google.common.collect.Multimap;
 
 import org.catrobat.catroid.ProjectManager;
+import org.catrobat.catroid.camera.CameraManager;
 import org.catrobat.catroid.common.Constants;
 import org.catrobat.catroid.common.LookData;
 import org.catrobat.catroid.common.ScreenModes;
@@ -147,6 +149,7 @@ public class StageListener implements ApplicationListener {
 	public boolean axesOn = false;
 
 	private byte[] thumbnail;
+	private boolean test = false;
 
 	StageListener() {
 	}
@@ -299,8 +302,8 @@ public class StageListener implements ApplicationListener {
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor(1f, 1f, 1f, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		if (reloadProject) {
 			int spriteSize = sprites.size();
 			for (int i = 0; i < spriteSize; i++) {
@@ -311,7 +314,11 @@ public class StageListener implements ApplicationListener {
 
 			Sprite sprite;
 			if (spriteSize > 0) {
-				sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
+				/*if(CameraManager.getInstance().isVideoOn())
+					sprites.get(0).look.setLookData(createVideoBackGroundLookData());
+				else*/
+					//sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
+
 			}
 			for (int i = 0; i < spriteSize; i++) {
 				sprite = sprites.get(i);
@@ -335,7 +342,10 @@ public class StageListener implements ApplicationListener {
 		if (firstStart) {
 			int spriteSize = sprites.size();
 			if (spriteSize > 0) {
-				sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
+				/*if(CameraManager.getInstance().isVideoOn())
+					sprites.get(0).look.setLookData(createVideoBackGroundLookData());
+				else*/
+					//sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
 			}
 			Map<String, List<String>> scriptActions = new HashMap<String, List<String>>();
 			for (int currentSprite = 0; currentSprite < spriteSize; currentSprite++) {
@@ -357,6 +367,10 @@ public class StageListener implements ApplicationListener {
 		}
 		if (!paused) {
 			float deltaTime = Gdx.graphics.getDeltaTime();
+
+			if(CameraManager.getInstance().isVideoOn()) {
+				//Log.d("Lausi", "do nothing...");
+			}
 
 			/*
 			 * Necessary for UiTests, when EMMA - code coverage is enabled.
@@ -624,11 +638,35 @@ public class StageListener implements ApplicationListener {
 	private LookData createWhiteBackgroundLookData() {
 		LookData whiteBackground = new LookData();
 		Pixmap whiteBackgroundPixmap = new Pixmap((int) virtualWidth, (int) virtualHeight, Format.RGBA8888);
-		whiteBackgroundPixmap.setColor(Color.WHITE);
+		whiteBackgroundPixmap.setColor(Color.WHITE);// Color.alpha(0) Color.WHITE
 		whiteBackgroundPixmap.fill();
 		whiteBackground.setPixmap(whiteBackgroundPixmap);
 		whiteBackground.setTextureRegion();
 		return whiteBackground;
+	}
+
+	private LookData createVideoBackGroundLookData() {
+		if(CameraManager.getInstance().frameExist()) {
+			LookData videoBackground = new LookData();
+			Log.d("Lausi", "vor PIXmap create");
+			Pixmap videoBackgroundPixmap;
+			videoBackgroundPixmap = new Pixmap(CameraManager.getInstance().getCurrentFrame(), 0, 0);
+			//CameraManager.getInstance().getCurrentFrame().length
+			//Pixmap videoBackgroundPixmap = new Pixmap((int) virtualWidth, (int) virtualHeight, Format.RGBA8888);
+			//videoBackgroundPixmap.getPixels().asIntBuffer().put(CameraManager.getInstance().getCurrentFrame());
+			Log.d("Lausi", "nach PIXmap create");
+			videoBackground.setPixmap(videoBackgroundPixmap);
+			videoBackground.setTextureRegion();
+			return videoBackground;
+		}
+		return createWhiteBackgroundLookData();
+	}
+
+	private void updateVideoLookData() {
+		Pixmap videoBackgroundPixmap =
+				new Pixmap(CameraManager.getInstance().getCurrentFrame(), (int) virtualWidth, (int) virtualHeight);
+		//sprites.get(0).look.setLookData(
+		sprites.get(0).getLookDataList().get(0).setPixmap(videoBackgroundPixmap);
 	}
 
 	private void disposeTextures() {

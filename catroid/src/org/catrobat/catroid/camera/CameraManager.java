@@ -35,6 +35,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.thoughtworks.xstream.mapper.Mapper;
+
 import org.catrobat.catroid.R;
 
 import java.io.ByteArrayOutputStream;
@@ -55,9 +57,18 @@ public final class CameraManager implements Camera.PreviewCallback {
 	private int previewHeight;
 	private int cameraID = 0;
 	private int orientation = 0;
+	private boolean started = false;
 
 	private boolean facingBack = true;
 	private boolean useTexture = false;
+	private boolean videoOn = false;
+
+	//private byte[] currentFrame;
+	private byte[] jpgData;
+	private boolean frameExist = false;
+
+	private transient int width = 1280;
+	private transient int height = 720;
 
 	public static CameraManager getInstance() {
 		if (instance == null) {
@@ -70,8 +81,10 @@ public final class CameraManager implements Camera.PreviewCallback {
 		int currentApi = android.os.Build.VERSION.SDK_INT;
 		if (currentApi >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			useTexture = true;
-			createTexture();
+			//createTexture();
 		}
+
+		//currentFrame = new byte[height*width/8*12];
 	}
 
 	public Camera getCamera() {
@@ -106,6 +119,7 @@ public final class CameraManager implements Camera.PreviewCallback {
 	}
 
 	private boolean createCamera() {
+		Log.d("Lausi", "CREATECAM");
 		if (camera != null) {
 			return false;
 		}
@@ -115,8 +129,9 @@ public final class CameraManager implements Camera.PreviewCallback {
 			Log.e(TAG, "Creating camera failed!", runtimeException);
 			return false;
 		}
-		camera.setPreviewCallbackWithBuffer(this);
-
+		camera.setDisplayOrientation(90);
+		//camera.setPreviewCallbackWithBuffer(this)
+		Log.d("Lausi", "SETCALLBACK");
 		if (useTexture && texture != null) {
             try {
                 setTexture();
@@ -125,25 +140,64 @@ public final class CameraManager implements Camera.PreviewCallback {
                 return false;
             }
 		}
+		//camera.addCallbackBuffer(currentFrame);*/
 		return true;
 	}
 
 	public boolean startCamera() {
+
+		//camera.setPreviewCallbackWithBuffer(this);
+		Log.d("Lausi", "STARTCAM");
 		if (camera == null) {
 			boolean success = createCamera();
 			if (!success) {
+				Log.d("Lausi", "STARTCAMPROBLEM");
 				return false;
 			}
 		}
+		//initCam();
+
 		Parameters parameters = camera.getParameters();
 		previewFormat = parameters.getPreviewFormat();
 		previewWidth = parameters.getPreviewSize().width;
 		previewHeight = parameters.getPreviewSize().height;
 		camera.startPreview();
+		Log.d("Lausi", "STARTCAMOK");
+		//camera.addCallbackBuffer(currentFrame);
 		return true;
 	}
 
+	public void initCam() {
+		Log.d("Lausi", "INIT:CAM");
+		if (camera != null) {
+			Log.d("Lausi", "in if!");
+			camera.setPreviewCallbackWithBuffer(this);
+			Camera.Parameters params = camera.getParameters();
+			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+			List<Camera.Size> bla = params.getSupportedPreviewSizes();
+			Log.d("Lausi","height"+bla.get(1).height);
+			Log.d("Lausi","width"+bla.get(1).width);
+			params.setPreviewSize(width, height);
+			params.set("orientation", "portrait");
+
+			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+				try {
+					camera.setParameters(params);
+					//texture = new SurfaceTexture(100);
+					//camera.setPreviewTexture(texture);
+				} catch (Exception e) {
+					Log.d("Lausi", "Could not create surface!" + e.getMessage());
+				}
+			}
+
+		}
+		else {
+			Log.d("Lausi", "ich glaub es hackt!");
+		}
+	}
+
 	public void releaseCamera() {
+		Log.d("Lausi", "RELEASE");
 		if (camera == null) {
 			return;
 		}
@@ -151,9 +205,11 @@ public final class CameraManager implements Camera.PreviewCallback {
 		camera.stopPreview();
 		camera.release();
 		camera = null;
+		started = false;
 	}
 
 	public void addOnJpgPreviewFrameCallback(JpgPreviewCallback callback) {
+		Log.d("Lausi", "JpegPreviewCallback");
 		if (callbacks.contains(callback)) {
 			return;
 		}
@@ -166,10 +222,12 @@ public final class CameraManager implements Camera.PreviewCallback {
 
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
+		Log.d("Lausi", "OnPReviewFram");
+		//camera.addCallbackBuffer(currentFrame);
 		if (callbacks.size() == 0) {
 			return;
 		}
-		byte[] jpgData = getDecodeableBytesFromCameraFrame(data);
+		jpgData = getDecodeableBytesFromCameraFrame(data);
 		for (JpgPreviewCallback callback : callbacks) {
 			callback.onFrame(jpgData);
 		}
@@ -199,5 +257,25 @@ public final class CameraManager implements Camera.PreviewCallback {
 			camera.setParameters(led);
 		}
 	}
+
+	public void setVideoRunning(boolean on)
+	{
+		if(on) {
+			Log.d("Lausi", "VideoON");
+			//startCamera();
+		}
+
+		videoOn = on;
+	}
+
+	public byte[] getCurrentFrame() {
+		return jpgData;
+	}
+
+	public boolean isVideoOn() {
+		return videoOn;
+	}
+
+	public boolean frameExist() { return frameExist; }
 
 }

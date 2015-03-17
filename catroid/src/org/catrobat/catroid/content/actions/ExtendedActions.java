@@ -501,4 +501,10 @@ public class ExtendedActions extends Actions {
 		action.setDuration(duration);
 		return action;
 	}
+
+	public static VideoAction turn(boolean videoOn) {
+		VideoAction action = action(VideoAction.class);
+		action.setChoosen(videoOn);
+		return action;
+	}
 }
