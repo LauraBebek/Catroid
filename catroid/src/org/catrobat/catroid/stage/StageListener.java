@@ -173,14 +173,32 @@ public class StageListener implements ApplicationListener {
 		viewPort = new ExtendViewport(virtualWidth, virtualHeight, camera);
 		batch = new SpriteBatch();
 		stage = new Stage(viewPort, batch);
+
+
+		//batch.enableBlending();
+		Gdx.gl.glViewport(0, 0, ScreenValues.SCREEN_WIDTH, ScreenValues.SCREEN_HEIGHT);
+		Gdx.gl.glEnable(GL20.GL_ALPHA);
+
 		initScreenMode();
 
 		sprites = project.getSpriteList();
+		boolean first = true;
 		for (Sprite sprite : sprites) {
-			sprite.resetSprite();
-			sprite.look.createBrightnessContrastShader();
-			stage.addActor(sprite.look);
-			sprite.resume();
+			if(first) {
+				sprite.resetSprite();
+				sprite.look.createBrightnessContrastShader();
+				//sprite.look.changeTransparencyInUserInterfaceDimensionUnit(100); bringt nix, td weiße unterste Schicht
+				stage.addActor(sprite.look);
+				sprite.resume();
+				first = false;
+			}
+			else {
+				sprite.resetSprite();
+				sprite.look.createBrightnessContrastShader();
+				stage.addActor(sprite.look);
+				sprite.resume();
+			}
+
 		}
 
 		passepartout = new Passepartout(ScreenValues.SCREEN_WIDTH, ScreenValues.SCREEN_HEIGHT, maximizeViewPortWidth,
@@ -302,8 +320,16 @@ public class StageListener implements ApplicationListener {
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(1f, 1f, 1f, 0);
+		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl.glClearColor(1, 1, 1, 0);
+		//float c = 1.0f / 256 * ( System.currentTimeMillis() % 256 );
+		//Gdx.gl.glClearColor( 0, 0, 0, 0 );
+		//Gdx.gl.glClear( GL10.GL_COLOR_BUFFER_BIT );
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
 		if (reloadProject) {
 			int spriteSize = sprites.size();
 			for (int i = 0; i < spriteSize; i++) {
@@ -313,19 +339,15 @@ public class StageListener implements ApplicationListener {
 			SoundManager.getInstance().clear();
 
 			Sprite sprite;
-			if (spriteSize > 0) {
-				/*if(CameraManager.getInstance().isVideoOn())
-					sprites.get(0).look.setLookData(createVideoBackGroundLookData());
-				else*/
-					//sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
+			//if (spriteSize > 0)
+				//	sprites.get(0).look.setLookData(createTransparentBackgroundLookData());
 
-			}
 			for (int i = 0; i < spriteSize; i++) {
-				sprite = sprites.get(i);
-				sprite.resetSprite();
-				sprite.look.createBrightnessContrastShader();
-				stage.addActor(sprite.look);
-				sprite.pause();
+					sprite = sprites.get(i);
+					sprite.resetSprite();
+					sprite.look.createBrightnessContrastShader();
+					stage.addActor(sprite.look);
+					sprite.pause();
 			}
 			stage.addActor(passepartout);
 
@@ -337,16 +359,14 @@ public class StageListener implements ApplicationListener {
 			}
 		}
 
+		batch.enableBlending();
 		batch.setProjectionMatrix(camera.combined);
 
 		if (firstStart) {
 			int spriteSize = sprites.size();
-			if (spriteSize > 0) {
-				/*if(CameraManager.getInstance().isVideoOn())
-					sprites.get(0).look.setLookData(createVideoBackGroundLookData());
-				else*/
-					//sprites.get(0).look.setLookData(createWhiteBackgroundLookData());
-			}
+			//if (spriteSize > 0)
+				//	sprites.get(0).look.setLookData(createTransparentBackgroundLookData());
+
 			Map<String, List<String>> scriptActions = new HashMap<String, List<String>>();
 			for (int currentSprite = 0; currentSprite < spriteSize; currentSprite++) {
 				Sprite sprite = sprites.get(currentSprite);
@@ -645,29 +665,16 @@ public class StageListener implements ApplicationListener {
 		return whiteBackground;
 	}
 
-	private LookData createVideoBackGroundLookData() {
-		if(CameraManager.getInstance().frameExist()) {
-			LookData videoBackground = new LookData();
-			Log.d("Lausi", "vor PIXmap create");
-			Pixmap videoBackgroundPixmap;
-			videoBackgroundPixmap = new Pixmap(CameraManager.getInstance().getCurrentFrame(), 0, 0);
-			//CameraManager.getInstance().getCurrentFrame().length
-			//Pixmap videoBackgroundPixmap = new Pixmap((int) virtualWidth, (int) virtualHeight, Format.RGBA8888);
-			//videoBackgroundPixmap.getPixels().asIntBuffer().put(CameraManager.getInstance().getCurrentFrame());
-			Log.d("Lausi", "nach PIXmap create");
-			videoBackground.setPixmap(videoBackgroundPixmap);
-			videoBackground.setTextureRegion();
-			return videoBackground;
-		}
-		return createWhiteBackgroundLookData();
+	private LookData createTransparentBackgroundLookData() {
+		LookData whiteBackground = new LookData();
+		Pixmap whiteBackgroundPixmap = new Pixmap((int) virtualWidth, (int) virtualHeight, Format.RGBA8888);
+		whiteBackgroundPixmap.setColor(1, 1, 1, 1f);// Color.alpha(0) Color.WHITE
+		whiteBackgroundPixmap.fill();
+		whiteBackground.setPixmap(whiteBackgroundPixmap);
+		whiteBackground.setTextureRegion();
+		return whiteBackground;
 	}
 
-	private void updateVideoLookData() {
-		Pixmap videoBackgroundPixmap =
-				new Pixmap(CameraManager.getInstance().getCurrentFrame(), (int) virtualWidth, (int) virtualHeight);
-		//sprites.get(0).look.setLookData(
-		sprites.get(0).getLookDataList().get(0).setPixmap(videoBackgroundPixmap);
-	}
 
 	private void disposeTextures() {
 		List<Sprite> sprites = project.getSpriteList();

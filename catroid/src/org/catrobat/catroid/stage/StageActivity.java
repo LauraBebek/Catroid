@@ -63,6 +63,8 @@ import org.catrobat.catroid.utils.LedUtil;
 import org.catrobat.catroid.utils.ToastUtil;
 import org.catrobat.catroid.utils.VibratorUtil;
 
+import java.util.ArrayList;
+
 public class StageActivity extends AndroidApplication {
 	public static final String TAG = StageActivity.class.getSimpleName();
 	public static StageListener stageListener;
@@ -77,9 +79,11 @@ public class StageActivity extends AndroidApplication {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d("Lausi", "On CREATE STAGE");
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
 		if (getIntent().getBooleanExtra(DroneInitializer.INIT_DRONE_STRING_EXTRA, false)) {
 			droneConnection = new DroneConnection(this);
@@ -103,8 +107,6 @@ public class StageActivity extends AndroidApplication {
 		}
 
 		stageAudioFocus = new StageAudioFocus(this);
-
-		//GLSurfaceView x = (GLSurfaceView)this.initializeForView(stageListener, true);
 	}
 
 	@Override
@@ -136,6 +138,7 @@ public class StageActivity extends AndroidApplication {
 
 	@Override
 	public void onResume() {
+		Log.d("Lausi", "On RESUME STAGE");
 		SensorHandler.startSensorListener(this);
 		stageListener.activityResume();
 		stageAudioFocus.requestAudioFocus();
@@ -251,9 +254,14 @@ public class StageActivity extends AndroidApplication {
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 
-			RelativeLayout layout = new RelativeLayout(this);
+			//RelativeLayout layout = new RelativeLayout(this);
 			AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
-			//cfg.r = cfg.g = cfg.b = cfg.a = 8;
+			cfg.r = 8;
+			cfg.g = 8;
+			cfg.b = 8;
+			cfg.a = 8;
+			cfg.depth = 16;
+			cfg.stencil = 0;
 			cfg.useGL20 = true;
 			cfg.hideStatusBar = true;
 			cfg.useWakelock = true;
@@ -261,27 +269,28 @@ public class StageActivity extends AndroidApplication {
 			GLSurfaceView gameView = (GLSurfaceView)initializeForView(listener, true);
 			if(gameView != null)
 				Log.d("Lausi","YES YES YES");
-			//gameView.setEGLConfigChooser( 8, 8, 8, 8, 16, 0 );
-			gameView.getHolder().setFormat( PixelFormat.TRANSLUCENT );
-			//gameView.setZOrderOnTop(true);
+
+			gameView.setZOrderOnTop(true);
+			gameView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+			gameView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 			gameView.setZOrderMediaOverlay(true);
 
-			//setContentView(gameView);
 
-			//layout.addView(gameView);
 			CameraPreview cameraView = new CameraPreview( this );
 			//cameraView.setZOrderOnTop(false);
-			// ...and add it, wrapping the full screen size.
-			//addContentView( cameraView, new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.WRAP_CONTENT,
-																	     //RelativeLayout.LayoutParams.WRAP_CONTENT ));
 
-			layout.addView(cameraView);
-			layout.addView(gameView);
+			//layout.addView(gameView);
+			//layout.addView(cameraView);
 
-			setContentView(layout);
+			//setContentView(layout);
+
+			// Now set this as the main view.
+			setContentView(gameView);
+
+			addContentView(cameraView, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT ));
+			//addContentView(gameView, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT ));
 
 		}
-		//initalizeForView.... LinearLayout.... add SurfaceView and graphic.view.... ZOrder
 
 	}
 
