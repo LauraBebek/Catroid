@@ -142,6 +142,7 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 
 	public void loadProject(String projectName, Context context) throws LoadingProjectException,
 			OutdatedVersionProjectException, CompatibilityProjectException {
+		Log.d(TAG, "loadProject");
 		fileChecksumContainer = new FileChecksumContainer();
 		Project oldProject = project;
 		MessageContainer.createBackup();
@@ -242,6 +243,7 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 	}
 
 	private void localizeBackgroundSprite(Context context) {
+		Log.d(TAG, "localizeBackgroundSprite");
 		// Set generic localized name on background sprite and move it to the back.
 		if (project.getSpriteList().size() > 0) {
 			project.getSpriteList().get(0).setName(context.getString(R.string.background));
@@ -277,6 +279,7 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 	}
 
 	public boolean initializeDefaultProject(Context context) {
+		Log.d(TAG, "initializeDefaultProject");
 		try {
 			fileChecksumContainer = new FileChecksumContainer();
 			project = DefaultProjectHandler.createAndSaveDefaultProject(context);
@@ -341,14 +344,11 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 	}
 
 	public void deleteProject(String projectName, Context context) throws IllegalArgumentException, IOException {
-		Log.d(TAG, "deleteProject " + projectName);
 		if (StorageHandler.getInstance().projectExists(projectName)) {
 			StorageHandler.getInstance().deleteProject(projectName);
 		}
 
 		if (project != null && project.getName().equals(projectName)) {
-			Log.d(TAG, "deleteProject(): project instance set to null");
-
 			project = null;
 
 			if (context != null) {

@@ -35,7 +35,7 @@ import org.catrobat.catroid.ui.fragment.BackPackLookFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackPackLookAdapter extends LookBaseAdapter implements ActionModeActivityAdapterInterface {
+public class BackPackLookAdapter extends LookBaseAdapter implements ScriptActivityAdapterInterface {
 
 	private BackPackLookFragment backpackLookFragment;
 

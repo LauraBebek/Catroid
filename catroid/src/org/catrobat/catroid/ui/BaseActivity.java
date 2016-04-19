@@ -57,7 +57,6 @@ public class BaseActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		// Partly from http://stackoverflow.com/a/5069354
 		unbindDrawables(((ViewGroup) findViewById(android.R.id.content)).getChildAt(0));
 		System.gc();
 

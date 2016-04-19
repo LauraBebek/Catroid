@@ -46,8 +46,6 @@ import java.util.List;
 public class SetBounceBrick extends FormulaBrick {
 	private static final long serialVersionUID = 1L;
 
-	private transient View prototypeView;
-
 	public SetBounceBrick() {
 		addAllowedBrickField(BrickField.PHYSICS_BOUNCE_FACTOR);
 	}
@@ -70,7 +68,7 @@ public class SetBounceBrick extends FormulaBrick {
 		return PHYSICS;
 	}
 
-	@Override
+	/*@Override
 	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
 		if (animationState) {
 			return view;
@@ -140,7 +138,7 @@ public class SetBounceBrick extends FormulaBrick {
 			return;
 		}
 		FormulaEditorFragment.showFragment(view, this, BrickField.PHYSICS_BOUNCE_FACTOR);
-	}
+	}*/
 
 	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
@@ -149,7 +147,7 @@ public class SetBounceBrick extends FormulaBrick {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
 	}
 }

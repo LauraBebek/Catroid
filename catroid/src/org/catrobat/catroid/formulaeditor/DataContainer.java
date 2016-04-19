@@ -26,8 +26,8 @@ import android.content.Context;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import org.catrobat.catroid.CatroidApplication;
 import org.catrobat.catroid.ProjectManager;
-import org.catrobat.catroid.R;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.content.bricks.UserBrick;
 import org.catrobat.catroid.content.bricks.UserScriptDefinitionBrickElement;
@@ -223,14 +223,16 @@ public class DataContainer implements Serializable {
 			UserVariable variableToDelete = findUserVariable(userVariableName, context);
 			if (variableToDelete != null) {
 				context.remove(variableToDelete);
-				if (userBrick != null) {
-					List<UserScriptDefinitionBrickElement> currentElements = userBrick.getUserScriptDefinitionBrickElements();
-					for (int id = 0; id < currentElements.size(); id++) {
-						if (currentElements.get(id).getText().equals(userVariableName) && currentElements.get(id).isVariable()) {
-							int alpha = userBrick.getAlphaValue();
-							Context alphaView = userBrick.getDefinitionBrick().getViewWithAlpha(alpha).getContext();
-							userBrick.getDefinitionBrick().removeVariablesInFormulas(currentElements.get(id).getText(), alphaView);
-							currentElements.remove(id);
+				if (currentUserBrick != null) {
+					UserScriptDefinitionBrickElements currentElements = currentUserBrick.getUserScriptDefinitionBrickElements();
+					for (int id = 0; id < currentElements.getUserScriptDefinitionBrickElementList().size(); id++) {
+						if (currentElements.getUserScriptDefinitionBrickElementList().get(id).name.equals(userVariableName) && currentElements.getUserScriptDefinitionBrickElementList().get(id).isVariable) {
+							//int alpha = currentUserBrick.getAlphaValue();
+//							Context context
+							//currentUserBrick.getDefinitionBrick().removeVariablesInFormulas(currentElements.getUserScriptDefinitionBrickElementList().get(id).name, currentUserBrick.getDefinitionBrick().getViewWithAlpha(alpha).getContext());
+							currentUserBrick.getDefinitionBrick().removeVariablesInFormulas(currentElements.getUserScriptDefinitionBrickElementList().get(id).name, CatroidApplication.getAppContext());
+							currentElements.getUserScriptDefinitionBrickElementList().remove(id);
+							currentElements.incrementVersion();
 						}
 					}
 				}

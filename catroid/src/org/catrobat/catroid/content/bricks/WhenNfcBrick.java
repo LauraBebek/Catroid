@@ -23,21 +23,9 @@
 package org.catrobat.catroid.content.bricks;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.database.DataSetObserver;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
@@ -52,13 +40,15 @@ import org.catrobat.catroid.ui.fragment.NfcTagFragment;
 
 import java.util.List;
 
-public class WhenNfcBrick extends ScriptBrick implements NfcTagFragment.OnNfcTagDataListChangedAfterNewListener {
+public class WhenNfcBrick extends ScriptBrick implements NfcTagFragment.OnNfcTagDataListChangedAfterNewListener, SpinnerBrick {
 	protected WhenNfcScript whenNfcScript;
-	private transient View prototypeView;
 	private transient NfcTagData nfcTag;
 	private transient NfcTagData oldSelectedNfcTag;
 	private static final long serialVersionUID = 1L;
-	private transient AdapterView<?> adapterView;
+
+	private int spinnerSelectionID;
+	private final int layoutId = R.layout.brick_when_nfc;
+	private final int spinnerId = R.id.brick_when_nfc_spinner;
 
 	public WhenNfcBrick() {
 		this.oldSelectedNfcTag = null;
@@ -106,265 +96,7 @@ public class WhenNfcBrick extends ScriptBrick implements NfcTagFragment.OnNfcTag
 
 	@Override
 	public Brick clone() {
-		//return new WhenNfcBrick(sprite, new WhenNfcScript(sprite));
 		return new WhenNfcBrick(new WhenNfcScript(nfcTag));
-	}
-
-	@Override
-	public View getView(final Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		if (view == null) {
-			alphaValue = 255;
-		}
-		if (whenNfcScript == null) {
-			whenNfcScript = new WhenNfcScript(nfcTag);
-		}
-		final Brick brickInstance = this;
-		view = View.inflate(context, R.layout.brick_when_nfc, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_when_nfc_checkbox);
-		checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		final Spinner nfcSpinner = (Spinner) view.findViewById(R.id.brick_when_nfc_spinner);
-
-		if (!(checkbox.getVisibility() == View.VISIBLE)) {
-			nfcSpinner.setClickable(true);
-			nfcSpinner.setEnabled(true);
-		} else {
-			nfcSpinner.setClickable(false);
-			nfcSpinner.setEnabled(false);
-		}
-
-		final ArrayAdapter<NfcTagData> spinnerAdapter = createNfcTagAdapter(context);
-
-		SpinnerAdapterWrapper spinnerAdapterWrapper = new SpinnerAdapterWrapper(context, spinnerAdapter);
-
-		nfcSpinner.setAdapter(spinnerAdapterWrapper);
-		nfcSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String selectedTag = nfcSpinner.getSelectedItem().toString();
-				Log.d("WhenNfcBrick", "onItemSelected(): " + selectedTag);
-
-				if (position == 0) {
-					nfcTag = null;
-				} else if (selectedTag.equals(context.getString(R.string.brick_when_nfc_default_all))) {
-					whenNfcScript.setMatchAll(true);
-					whenNfcScript.setNfcTag(null);
-					//TODO: rework all
-					nfcTag = null; //(NfcTagData)parent.getItemAtPosition(position);
-					oldSelectedNfcTag = nfcTag;
-					adapterView = parent;
-				} else {
-					if (whenNfcScript.getNfcTag() == null) {
-						whenNfcScript.setNfcTag(new NfcTagData());
-					}
-					for (NfcTagData selTag : ProjectManager.getInstance().getCurrentSprite().getNfcTagList()) {
-						if (selTag.getNfcTagName().equals(selectedTag)) {
-							whenNfcScript.setNfcTag(selTag);
-							nfcTag = (NfcTagData) parent.getItemAtPosition(position); //selTag
-							break;
-						}
-					}
-					whenNfcScript.setMatchAll(false);
-					oldSelectedNfcTag = nfcTag;
-					adapterView = parent;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-
-		setSpinnerSelection(nfcSpinner);
-
-		return view;
-	}
-
-	private void setSpinnerSelection(Spinner spinner) {
-		if (ProjectManager.getInstance().getCurrentSprite().getNfcTagList().contains(nfcTag)) {
-			Log.d("setSpinnerSelection", "nfcTag found: " + nfcTag.getNfcTagName());
-			oldSelectedNfcTag = nfcTag;
-			spinner.setSelection(ProjectManager.getInstance().getCurrentSprite().getNfcTagList().indexOf(nfcTag) + 2, true);
-		} else {
-			if (spinner.getAdapter() != null && spinner.getAdapter().getCount() > 1) {
-				if (ProjectManager.getInstance().getCurrentSprite().getNfcTagList().indexOf(oldSelectedNfcTag) >= 0) {
-					spinner.setSelection(ProjectManager.getInstance().getCurrentSprite().getNfcTagList().indexOf(oldSelectedNfcTag) + 2, true);
-					Log.d("setSpinnerSelection", "oldSelectedNfcTag found");
-				} else {
-					spinner.setSelection(1, true);
-					Log.d("setSpinnerSelection", "setSelection(1, true)");
-				}
-			} else {
-				spinner.setSelection(0, true);
-				Log.d("setSpinnerSelection", "setSelection(0, true)");
-			}
-		}
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_when_nfc_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView textWhenNfcLabel = (TextView) view.findViewById(R.id.brick_when_nfc_label);
-			textWhenNfcLabel.setTextColor(textWhenNfcLabel.getTextColors().withAlpha(alphaValue));
-			Spinner nfcSpinner = (Spinner) view.findViewById(R.id.brick_when_nfc_spinner);
-			ColorStateList color = textWhenNfcLabel.getTextColors().withAlpha(alphaValue);
-			nfcSpinner.getBackground().setAlpha(alphaValue);
-			if (adapterView != null) {
-				((TextView) adapterView.getChildAt(0)).setTextColor(color);
-			}
-			this.alphaValue = alphaValue;
-		}
-		return view;
-	}
-
-	private ArrayAdapter<NfcTagData> createNfcTagAdapter(Context context) {
-		ArrayAdapter<NfcTagData> arrayAdapter = new ArrayAdapter<NfcTagData>(context, android.R.layout.simple_spinner_item);
-		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		NfcTagData dummyNfcTagData = new NfcTagData();
-		dummyNfcTagData.setNfcTagName(context.getString(R.string.new_broadcast_message));
-		arrayAdapter.add(dummyNfcTagData);
-		dummyNfcTagData = new NfcTagData();
-		dummyNfcTagData.setNfcTagName(context.getString(R.string.brick_when_nfc_default_all));
-		arrayAdapter.add(dummyNfcTagData);
-		for (NfcTagData nfcTagData : ProjectManager.getInstance().getCurrentSprite().getNfcTagList()) {
-			arrayAdapter.add(nfcTagData);
-		}
-		return arrayAdapter;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_when_nfc, null);
-		Spinner nfcSpinner = (Spinner) prototypeView.findViewById(R.id.brick_when_nfc_spinner);
-		nfcSpinner.setFocusableInTouchMode(false);
-		nfcSpinner.setFocusable(false);
-		SpinnerAdapter nfcSpinnerAdapter = createNfcTagAdapter(context); //NfcTagContainer.getMessageAdapter(context);
-		nfcSpinner.setAdapter(nfcSpinnerAdapter);
-		setSpinnerSelection(nfcSpinner);
-		return prototypeView;
-	}
-
-	private void setOnNfcTagDataListChangedAfterNewListener(Context context) {
-		ScriptActivity scriptActivity = (ScriptActivity) context;
-		NfcTagFragment nfcTagFragment = (NfcTagFragment) scriptActivity.getFragment(ScriptActivity.FRAGMENT_NFCTAGS);
-		if (nfcTagFragment != null) {
-			nfcTagFragment.setOnNfcTagDataListChangedAfterNewListener(this);
-		}
-	}
-
-	private class SpinnerAdapterWrapper implements SpinnerAdapter {
-
-		protected Context context;
-		protected ArrayAdapter<NfcTagData> spinnerAdapter;
-
-		private boolean isTouchInDropDownView;
-
-		public SpinnerAdapterWrapper(Context context, ArrayAdapter<NfcTagData> spinnerAdapter) {
-			this.context = context;
-			this.spinnerAdapter = spinnerAdapter;
-
-			this.isTouchInDropDownView = false;
-		}
-
-		@Override
-		public void registerDataSetObserver(DataSetObserver paramDataSetObserver) {
-			spinnerAdapter.registerDataSetObserver(paramDataSetObserver);
-		}
-
-		@Override
-		public void unregisterDataSetObserver(DataSetObserver paramDataSetObserver) {
-			spinnerAdapter.unregisterDataSetObserver(paramDataSetObserver);
-		}
-
-		@Override
-		public int getCount() {
-			return spinnerAdapter.getCount();
-		}
-
-		@Override
-		public Object getItem(int paramInt) {
-			return spinnerAdapter.getItem(paramInt);
-		}
-
-		@Override
-		public long getItemId(int paramInt) {
-			NfcTagData currentNfcTag = spinnerAdapter.getItem(paramInt);
-			if (!currentNfcTag.getNfcTagName().equals(context.getString(R.string.new_broadcast_message))) {
-				oldSelectedNfcTag = currentNfcTag;
-			}
-			return spinnerAdapter.getItemId(paramInt);
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return spinnerAdapter.hasStableIds();
-		}
-
-		@Override
-		public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-			if (isTouchInDropDownView) {
-				isTouchInDropDownView = false;
-				if (paramInt == 0) {
-					switchToNfcTagFragmentFromScriptFragment();
-				}
-			}
-			return spinnerAdapter.getView(paramInt, paramView, paramViewGroup);
-		}
-
-		@Override
-		public int getItemViewType(int paramInt) {
-			return spinnerAdapter.getItemViewType(paramInt);
-		}
-
-		@Override
-		public int getViewTypeCount() {
-			return spinnerAdapter.getViewTypeCount();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return spinnerAdapter.isEmpty();
-		}
-
-		@Override
-		public View getDropDownView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-			View dropDownView = spinnerAdapter.getDropDownView(paramInt, paramView, paramViewGroup);
-
-			dropDownView.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View paramView, MotionEvent paramMotionEvent) {
-					isTouchInDropDownView = true;
-					return false;
-				}
-			});
-
-			return dropDownView;
-		}
-
-		private void switchToNfcTagFragmentFromScriptFragment() {
-			ScriptActivity scriptActivity = ((ScriptActivity) context);
-			scriptActivity.switchToFragmentFromScriptFragment(ScriptActivity.FRAGMENT_NFCTAGS);
-
-			setOnNfcTagDataListChangedAfterNewListener(context);
-		}
 	}
 
 	@Override
@@ -398,4 +130,31 @@ public class WhenNfcBrick extends ScriptBrick implements NfcTagFragment.OnNfcTag
 	public void setWhenNfcScript(WhenNfcScript whenNfcScript) {
 		this.whenNfcScript = whenNfcScript;
 	}
+
+	@Override
+	public ArrayAdapter<CharSequence> createArrayAdapter(Context context) {
+
+		ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(context, R.array.nxt_motor_chooser,
+				android.R.layout.simple_spinner_item);
+		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		return spinnerAdapter;
+	}
+
+	public void  setSelectedSpinnerItem(int position) {
+		spinnerSelectionID = position;
+	}
+
+	public int getSelectedSpinnerItem() {
+		return spinnerSelectionID;
+	}
+
+	public int getLayoutId() {
+		return layoutId;
+	}
+
+	public int getSpinnerId() {
+		return spinnerId;
+	}
+
 }

@@ -108,7 +108,6 @@ import org.catrobat.catroid.content.bricks.PlaySoundBrick;
 import org.catrobat.catroid.content.bricks.PointInDirectionBrick;
 import org.catrobat.catroid.content.bricks.PointInDirectionBrick.Direction;
 import org.catrobat.catroid.content.bricks.PointToBrick;
-import org.catrobat.catroid.content.bricks.PointToBrick.SpinnerAdapterWrapper;
 import org.catrobat.catroid.content.bricks.RepeatBrick;
 import org.catrobat.catroid.content.bricks.SetBrightnessBrick;
 import org.catrobat.catroid.content.bricks.SetColorBrick;
@@ -137,6 +136,7 @@ import org.catrobat.catroid.formulaeditor.UserVariable;
 import org.catrobat.catroid.io.StorageHandler;
 import org.catrobat.catroid.stage.StageListener;
 import org.catrobat.catroid.test.utils.Reflection;
+import org.catrobat.catroid.ui.BrickView;
 import org.catrobat.catroid.ui.MainMenuActivity;
 import org.catrobat.catroid.ui.ProgramMenuActivity;
 import org.catrobat.catroid.ui.ProjectActivity;
@@ -145,6 +145,7 @@ import org.catrobat.catroid.ui.SettingsActivity;
 import org.catrobat.catroid.ui.UserBrickScriptActivity;
 import org.catrobat.catroid.ui.controller.BackPackListManager;
 import org.catrobat.catroid.ui.dialogs.NewSpriteDialog;
+import org.catrobat.catroid.ui.dialogs.NewSpriteDialog.SpinnerAdapterWrapper;
 import org.catrobat.catroid.ui.dialogs.NewSpriteDialog.ActionAfterFinished;
 import org.catrobat.catroid.ui.fragment.AddBrickFragment;
 import org.catrobat.catroid.ui.fragment.FormulaEditorDataFragment;
@@ -362,6 +363,24 @@ public final class UiTestUtils {
 		projectManager.setCurrentScript(thirdScript);
 
 		return setVariableBrick;
+	}
+
+	public static BrickView getBrickViewByLayoutId(Solo solo, int layoutResId) {
+		return getBrickViewByLayoutId(solo, layoutResId, 0);
+	}
+
+	public static BrickView getBrickViewByLayoutId(Solo solo, int layoutResId, int index) {
+		return (BrickView) solo.getView(layoutResId, index).getParent();
+	}
+
+	public static void clickOnBrickView(Solo solo, int index) {
+		BrickView brickView = solo.getCurrentViews(BrickView.class).get(index);
+		solo.clickOnView(brickView);
+	}
+
+	public static void clickOnBrickView(Solo solo, int layoutResId, int index) {
+		BrickView brickView = getBrickViewByLayoutId(solo, layoutResId, index);
+		solo.clickOnView(brickView);
 	}
 
 	public static enum FileTypes {
@@ -735,11 +754,11 @@ public final class UiTestUtils {
 		}
 
 		solo.sleep(600);
-		openActionMode(solo, solo.getString(R.string.delete), R.id.delete, solo.getCurrentActivity());
+		UiTestUtils.openActionMode(solo, solo.getString(R.string.delete), R.id.delete, solo.getCurrentActivity());
 
-		solo.clickOnCheckBox(1);
+		clickOnBrickView(solo, 1);
 
-		acceptAndCloseActionMode(solo);
+		UiTestUtils.acceptAndCloseActionMode(solo);
 		solo.clickOnButton(solo.getString(R.string.yes));
 	}
 

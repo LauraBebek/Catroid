@@ -21,20 +21,14 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.catrobat.catroid.ui.BrickView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal" >
 
-    <CheckBox
-        android:id="@+id/brick_show_text_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:visibility="gone" />
+    <include layout="@layout/include_checkbox_brick" />
 
     <org.catrobat.catroid.ui.BrickLayout
         android:id="@+id/brick_show_text_layout"
@@ -73,10 +67,6 @@
         </TextView >
 
         <TextView
-            android:id="@+id/brick_show_text_prototype_text_view_x"
-            style="@style/BrickPrototypeTextView" />
-
-        <TextView
             android:id="@+id/brick_show_text_edit_text_x"
             style="@style/BrickEditText"
             app:layout_inputType="number"
@@ -90,10 +80,6 @@
         </TextView >
 
         <TextView
-            android:id="@+id/brick_show_text_prototype_text_view_y"
-            style="@style/BrickPrototypeTextView" />
-
-        <TextView
             android:id="@+id/brick_show_text_edit_text_y"
             style="@style/BrickEditText"
             app:layout_inputType="number"
@@ -102,4 +88,4 @@
 
     </org.catrobat.catroid.ui.BrickLayout >
 
-</LinearLayout>
+</org.catrobat.catroid.ui.BrickView>

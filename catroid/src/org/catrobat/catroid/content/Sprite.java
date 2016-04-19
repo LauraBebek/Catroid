@@ -246,6 +246,7 @@ public class Sprite implements Serializable, Cloneable {
 				BroadcastHandler.getScriptSpriteMapMap().put(script, this);
 				putBroadcastSequenceAction(broadcastScript.getBroadcastMessage(), action);
 				String actionName = action.toString() + Constants.ACTION_SPRITE_SEPARATOR + name + scriptCounter;
+
 				if (scriptActions.containsKey(Constants.BROADCAST_SCRIPT)) {
 					scriptActions.get(Constants.BROADCAST_SCRIPT).add(actionName);
 					BroadcastHandler.getStringActionMap().put(actionName, action);

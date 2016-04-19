@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SoundAdapter extends SoundBaseAdapter implements ActionModeActivityAdapterInterface, SoundController.OnBackpackSoundCompleteListener {
+public class SoundAdapter extends SoundBaseAdapter implements ScriptActivityAdapterInterface, SoundController.OnBackpackSoundCompleteListener {
 
 	private SoundFragment soundFragment;
 

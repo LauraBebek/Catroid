@@ -38,9 +38,9 @@ public class Formula implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private FormulaElement formulaTree;
-	private transient Integer formulaTextFieldId = null;
-	private transient InternFormula internFormula = null;
-	private transient String displayText = null;
+	private Integer formulaTextFieldId = null;
+	private InternFormula internFormula = null;
+	private String displayText = null;
 
 	public Object readResolve() {
 
@@ -203,10 +203,12 @@ public class Formula implements Serializable {
 		Drawable highlightBackground;
 		highlightBackground = brickView.getResources().getDrawable(R.drawable.textfield_pressed_android4);
 
-		TextView formulaTextField = (TextView) brickView.findViewById(formulaTextFieldId);
+		if(formulaTextFieldId != null) {
+			TextView formulaTextField = (TextView) brickView.findViewById(formulaTextFieldId);
 
-		if (formulaTextField != null) {
-			formulaTextField.setBackgroundDrawable(highlightBackground);
+			if (formulaTextField != null) {
+				formulaTextField.setBackgroundDrawable(highlightBackground);
+			}
 		}
 	}
 
@@ -235,7 +237,6 @@ public class Formula implements Serializable {
 		if (formulaTree != null) {
 			return new Formula(formulaTree.clone());
 		}
-
 		return new Formula(0);
 	}
 

@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class SoundBaseAdapter extends ArrayAdapter<SoundInfo> implements ActionModeActivityAdapterInterface {
+public class SoundBaseAdapter extends ArrayAdapter<SoundInfo> implements ScriptActivityAdapterInterface {
 
 	protected List<SoundInfo> soundInfoItems;
 

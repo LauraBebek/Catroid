@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class NfcTagBaseAdapter extends ArrayAdapter<NfcTagData> implements ActionModeActivityAdapterInterface {
+public class NfcTagBaseAdapter extends ArrayAdapter<NfcTagData> implements ScriptActivityAdapterInterface {
 
 	protected List<NfcTagData> nfcTagDataItems;
 	protected Context context;

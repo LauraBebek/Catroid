@@ -22,46 +22,46 @@
  */
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.util.Pair;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import org.catrobat.catroid.ProjectManager;
-import org.catrobat.catroid.R;
 import org.catrobat.catroid.content.ActionFactory;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.formulaeditor.InterpretationException;
-import org.catrobat.catroid.formulaeditor.UserVariable;
-import org.catrobat.catroid.ui.BrickLayout;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class UserBrick extends BrickBaseType implements OnClickListener {
+public class UserBrick extends BrickBaseType {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = UserBrick.class.getSimpleName();
 
 	@XStreamAlias("definitionBrick")
 	private UserScriptDefinitionBrick definitionBrick;
-	private transient View prototypeView;
 
 	@XStreamAlias("userBrickParameters")
 	private List<UserBrickParameter> userBrickParameters = new ArrayList<>();
 
+	@XStreamAlias("userBrickPositionToParameter")
+	private ArrayList<Pair<Integer, Integer>> userBrickPositionToParameter;
+
+	// belonging to stored brick
+	private transient int lastDataVersion = 0;
+
+	@XStreamAlias("userBrickId")
+	private int userBrickId;
+
+	public UserBrick(int userBrickId) {
+		this.userBrickId = userBrickId;
+		this.definitionBrick = new UserScriptDefinitionBrick(this);
+		userBrickPositionToParameter = new ArrayList<Pair<Integer, Integer>>();
+		updateUserBrickParameters(null);
 	public UserBrick() {
 		this.definitionBrick = new UserScriptDefinitionBrick();
 	}
@@ -197,160 +197,6 @@ public class UserBrick extends BrickBaseType implements OnClickListener {
 	}
 
 	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		setUserBrickParametersParent();
-
-		view = View.inflate(context, R.layout.brick_user, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_user_checkbox);
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(UserBrick.this, isChecked);
-			}
-		});
-		onLayoutChanged(view);
-
-		return view;
-	}
-
-	private void setUserBrickParametersParent() {
-		if (userBrickParameters != null) {
-			for (UserBrickParameter parameter : userBrickParameters) {
-				parameter.setParent(this);
-			}
-		}
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_user, null);
-		onLayoutChanged(prototypeView);
-		return prototypeView;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-		if (view == null) {
-			return null;
-		}
-		setUserBrickParametersParent();
-
-		onLayoutChanged(view);
-
-		BrickLayout layout = (BrickLayout) view.findViewById(R.id.brick_user_flow_layout);
-		Drawable background = layout.getBackground();
-		background.setAlpha(alphaValue);
-		this.alphaValue = alphaValue;
-
-		if (userBrickParameters == null) {
-			return view;
-		}
-
-		for (UserBrickParameter component : userBrickParameters) {
-			if (component != null && component.getTextView() != null) {
-				component.getTextView().setTextColor(component.getTextView().getTextColors().withAlpha(alphaValue));
-				if (component.getTextView().getBackground() != null) {
-					component.getTextView().getBackground().setAlpha(alphaValue);
-				}
-			}
-		}
-
-		return view;
-	}
-
-	public void onLayoutChanged(View currentView) {
-		boolean prototype = (currentView == prototypeView);
-
-		Context context = currentView.getContext();
-
-		BrickLayout layout = (BrickLayout) currentView.findViewById(R.id.brick_user_flow_layout);
-		if (layout.getChildCount() > 0) {
-			layout.removeAllViews();
-		}
-
-		int id = 0;
-		for (UserScriptDefinitionBrickElement element : getUserScriptDefinitionBrickElements()) {
-			TextView currentEditText;
-			if (element.isLineBreak()) {
-				continue;
-			} else if (element.isVariable()) {
-				UserBrickParameter parameter = getUserBrickParameterByUserBrickElement(element);
-				currentEditText = new EditText(context);
-
-				if (prototype) {
-					currentEditText.setTextAppearance(context, R.style.BrickPrototypeTextView);
-					currentEditText.setText(String.format(Locale.US, "%s", 0.0));
-				} else {
-					currentEditText.setId(id);
-					currentEditText.setTextAppearance(context, R.style.BrickEditText);
-
-					if (parameter != null) {
-						parameter.getFormulaWithBrickField(BrickField.USER_BRICK).setTextFieldId(currentEditText.getId());
-						String formulaString = parameter.getFormulaWithBrickField(BrickField.USER_BRICK).getDisplayString(currentEditText.getContext());
-						parameter.getFormulaWithBrickField(BrickField.USER_BRICK).refreshTextField(currentEditText, formulaString);
-					}
-
-					// This stuff isn't being included by the style when I use setTextAppearance.
-					currentEditText.setFocusable(false);
-					currentEditText.setFocusableInTouchMode(false);
-
-					currentEditText.setOnClickListener(this);
-				}
-				currentEditText.setVisibility(View.VISIBLE);
-				if (parameter != null) {
-					if (prototype) {
-						parameter.setPrototypeView(currentEditText);
-					} else {
-						parameter.setTextView(currentEditText);
-					}
-				}
-			} else {
-				currentEditText = new TextView(context);
-				currentEditText.setTextAppearance(context, R.style.BrickText_Multiple);
-
-				currentEditText.setText(element.getText());
-			}
-
-			// This stuff isn't being included by the style when I use setTextAppearance.
-			if (prototype) {
-				currentEditText.setFocusable(false);
-				currentEditText.setFocusableInTouchMode(false);
-				currentEditText.setClickable(false);
-			}
-
-			layout.addView(currentEditText);
-
-			if (element.isNewLineHint()) {
-				BrickLayout.LayoutParams params = (BrickLayout.LayoutParams) currentEditText.getLayoutParams();
-				params.setNewLine(true);
-				currentEditText.setLayoutParams(params);
-			}
-			id++;
-		}
-	}
-
-	@Override
-	public void onClick(View eventOrigin) {
-		if (checkbox.getVisibility() == View.VISIBLE) {
-			return;
-		}
-
-		for (UserBrickParameter userBrickParameter : userBrickParameters) {
-			int currentUserBrickParameterIndex = userBrickParameter.getTextView().getId();
-			int clickedUserBrickParameterIndex = eventOrigin.getId();
-			if (currentUserBrickParameterIndex == clickedUserBrickParameterIndex) {
-				userBrickParameter.showFormulaEditorToEditFormula(view);
-			}
-		}
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		updateUserVariableValues();
 		List<SequenceAction> returnActionList = new ArrayList<>();
@@ -383,5 +229,9 @@ public class UserBrick extends BrickBaseType implements OnClickListener {
 		for (Brick brick : definitionBrick.getUserScript().getBrickList()) {
 			brick.storeDataForBackPack(sprite);
 		}
+	}
+
+	public int getLastDataVersion() {
+		return lastDataVersion;
 	}
 }

@@ -35,7 +35,7 @@ import org.catrobat.catroid.ui.fragment.BackPackSoundFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackPackSoundAdapter extends SoundBaseAdapter implements ActionModeActivityAdapterInterface {
+public class BackPackSoundAdapter extends SoundBaseAdapter implements ScriptActivityAdapterInterface {
 
 	private BackPackSoundFragment backPackSoundFragment;
 

@@ -22,15 +22,11 @@
  */
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
 import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import org.catrobat.catroid.R;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.Formula;
 
@@ -65,23 +61,7 @@ public class DroneTurnRightMagnetoBrick extends DroneMoveBrick {
 		return null;
 	}
 
-	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		View brickView = super.getView(context, brickId, baseAdapter);
-		TextView editTextView = (TextView) brickView.findViewById(R.id.brick_drone_move_text_view_power);
-		editTextView.setText(R.string.brick_drone_angle);
-		return brickView;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = super.getPrototypeView(context);
-		TextView textView = (TextView) prototypeView.findViewById(R.id.brick_drone_move_text_view_power);
-		textView.setText(R.string.brick_drone_angle);
-		return prototypeView;
-	}
-
-	@Override
+	/*@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

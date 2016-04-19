@@ -25,6 +25,7 @@ package org.catrobat.catroid.ui.fragment;
 import android.app.ActionBar;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,7 +72,9 @@ public class BrickCategoryFragment extends ListFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_brick_categories, container, false);
+		Log.d("ScriptFragment", "BrickCategoryFRagment: onCreateView");
+		View rootView = View.inflate(getActivity(), R.layout.fragment_brick_categories, null);
+		//View rootView = inflater.inflate(R.layout.fragment_brick_categories, container, false);
 
 		setUpActionBar();
 		BottomBar.hideBottomBar(getActivity());

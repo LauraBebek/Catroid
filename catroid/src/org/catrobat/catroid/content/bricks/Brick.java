@@ -90,37 +90,37 @@ public interface Brick extends Serializable, Cloneable {
 	//needed for the Sprite#clone()-Method
 	Brick copyBrickForSprite(Sprite sprite);
 
-	View getView(Context context, int brickId, BaseAdapter adapter);
+	//View getView(Context context, int brickId, BaseAdapter adapter);
 
-	View getPrototypeView(Context context);
+	//View getPrototypeView(Context context);
 
 	Brick clone() throws CloneNotSupportedException;
 
 	int getRequiredResources();
 
-	void setCheckboxVisibility(int visibility);
+	//void setCheckboxVisibility(int visibility);
 
-	int getAlphaValue();
+	//int getAlphaValue();
 
-	void setBrickAdapter(BrickAdapter adapter);
+	//void setBrickAdapter(BrickAdapter adapter);
 
-	CheckBox getCheckBox();
+	//CheckBox getCheckBox();
 
-	boolean isChecked();
+	//boolean isChecked();
 
-	void setCheckedBoolean(boolean newValue);
+	//void setCheckedBoolean(boolean newValue);
 
-	void setCheckboxView(int id);
+	//void setCheckboxView(int id);
 
-	void setCheckboxView(int id, View view);
+	//void setCheckboxView(int id, View view);
 
-	View getViewWithAlpha(int alphaValue);
+	//View getViewWithAlpha(int alphaValue);
 
-	void setAnimationState(boolean animationState);
+	//void setAnimationState(boolean animationState);
 
-	void setAlpha(int alphaFull);
+	//void setAlpha(int alphaFull);
 
-	void enableAllViews(View view, boolean enable);
+	//void enableAllViews(View view, boolean enable);
 
 	boolean isEqualBrick(Brick brick, Project mergeResult, Project current);
 

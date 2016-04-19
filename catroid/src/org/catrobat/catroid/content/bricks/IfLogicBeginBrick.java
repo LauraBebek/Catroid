@@ -100,78 +100,10 @@ public class IfLogicBeginBrick extends FormulaBrick implements NestingBrick {
 		return new IfLogicBeginBrick(getFormulaWithBrickField(BrickField.IF_CONDITION).clone());
 	}
 
-	@Override
+	/*@Override
 	public void showFormulaEditorToEditFormula(View view) {
 		FormulaEditorFragment.showFragment(view, this, BrickField.IF_CONDITION);
-	}
-
-	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		if (view == null) {
-			alphaValue = 255;
-		}
-
-		view = View.inflate(context, R.layout.brick_if_begin_if, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_if_begin_checkbox);
-		final Brick brickInstance = this;
-
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView prototypeTextView = (TextView) view.findViewById(R.id.brick_if_begin_prototype_text_view);
-		TextView ifBeginTextView = (TextView) view.findViewById(R.id.brick_if_begin_edit_text);
-
-		getFormulaWithBrickField(BrickField.IF_CONDITION).setTextFieldId(R.id.brick_if_begin_edit_text);
-		getFormulaWithBrickField(BrickField.IF_CONDITION).refreshTextField(view);
-
-		prototypeTextView.setVisibility(View.GONE);
-		ifBeginTextView.setVisibility(View.VISIBLE);
-
-		ifBeginTextView.setOnClickListener(this);
-
-		return view;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_if_begin_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView ifLabel = (TextView) view.findViewById(R.id.if_label);
-			TextView ifLabelEnd = (TextView) view.findViewById(R.id.if_label_second_part);
-			TextView editX = (TextView) view.findViewById(R.id.brick_if_begin_edit_text);
-			ifLabel.setTextColor(ifLabel.getTextColors().withAlpha(alphaValue));
-			ifLabelEnd.setTextColor(ifLabelEnd.getTextColors().withAlpha(alphaValue));
-			editX.setTextColor(editX.getTextColors().withAlpha(alphaValue));
-			editX.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		View prototypeView = View.inflate(context, R.layout.brick_if_begin_if, null);
-		TextView textIfBegin = (TextView) prototypeView.findViewById(R.id.brick_if_begin_prototype_text_view);
-		textIfBegin.setText(String.valueOf(BrickValues.IF_CONDITION));
-		return prototypeView;
-	}
+	}*/
 
 	@Override
 	public boolean isInitialized() {
@@ -231,7 +163,7 @@ public class IfLogicBeginBrick extends FormulaBrick implements NestingBrick {
 		return copyBrick;
 	}
 
-	@Override
+	/*@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

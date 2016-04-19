@@ -44,7 +44,7 @@ import org.catrobat.catroid.ui.fragment.BackPackSpriteFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackPackSpriteAdapter extends SpriteBaseAdapter implements ActionModeActivityAdapterInterface {
+public class BackPackSpriteAdapter extends SpriteBaseAdapter implements ScriptActivityAdapterInterface {
 
 	private final BackPackSpriteFragment backpackSpriteFragment;
 

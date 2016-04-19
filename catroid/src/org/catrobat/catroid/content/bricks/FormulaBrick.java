@@ -23,6 +23,7 @@
 package org.catrobat.catroid.content.bricks;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 
@@ -32,7 +33,7 @@ import org.catrobat.catroid.formulaeditor.Formula;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class FormulaBrick extends BrickBaseType implements View.OnClickListener {
+public abstract class FormulaBrick extends BrickBaseType { //implements View.OnClickListener {
 
 	private ConcurrentFormulaHashMap formulaMap;
 
@@ -78,19 +79,7 @@ public abstract class FormulaBrick extends BrickBaseType implements View.OnClick
 		return formulas;
 	}
 
-	@Override
-	public void onClick(View view) {
-		if (checkbox.getVisibility() == View.VISIBLE) {
-			return;
-		}
-		showFormulaEditorToEditFormula(view);
-	}
+	/*public abstract void showFormulaEditorToEditFormula(View view);
 
-	public View getCustomView(Context context, int brickId, BaseAdapter baseAdapter) {
-		return null;
-	}
-
-	public abstract void showFormulaEditorToEditFormula(View view);
-
-	public abstract void updateReferenceAfterMerge(Project into, Project from);
+	public abstract void updateReferenceAfterMerge(Project into, Project from);*/
 }

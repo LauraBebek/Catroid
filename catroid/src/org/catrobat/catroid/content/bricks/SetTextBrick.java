@@ -23,29 +23,15 @@
 
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import org.catrobat.catroid.R;
-import org.catrobat.catroid.common.BrickValues;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
-import org.catrobat.catroid.utils.Utils;
 
 import java.util.List;
 
-public class SetTextBrick extends FormulaBrick implements View.OnClickListener {
+public class SetTextBrick extends FormulaBrick { //implements View.OnClickListener {
 	private static final long serialVersionUID = 1L;
-
-	private transient View prototypeView;
 
 	public SetTextBrick() {
 		addAllowedBrickField(BrickField.X_DESTINATION);
@@ -90,138 +76,14 @@ public class SetTextBrick extends FormulaBrick implements View.OnClickListener {
 				| getFormulaWithBrickField(BrickField.STRING).getRequiredResources();
 	}
 
-	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		view = View.inflate(context, R.layout.brick_drone_set_text, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_set_text_checkbox);
-		final Brick brickInstance = this;
-
-		checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView textX = (TextView) view.findViewById(R.id.brick_set_text_prototype_text_view_x);
-		TextView textY = (TextView) view.findViewById(R.id.brick_set_text_prototype_text_view_y);
-
-		TextView editX = (TextView) view.findViewById(R.id.brick_set_text_edit_text_x);
-		TextView editY = (TextView) view.findViewById(R.id.brick_set_text_edit_text_y);
-
-		getFormulaWithBrickField(BrickField.X_DESTINATION).setTextFieldId(R.id.brick_set_text_edit_text_x);
-		getFormulaWithBrickField(BrickField.X_DESTINATION).refreshTextField(view);
-		editX.setOnClickListener(this);
-
-		getFormulaWithBrickField(BrickField.Y_DESTINATION).setTextFieldId(R.id.brick_set_text_edit_text_y);
-		getFormulaWithBrickField(BrickField.Y_DESTINATION).refreshTextField(view);
-		editY.setOnClickListener(this);
-
-		TextView text = (TextView) view.findViewById(R.id.brick_set_text_prototype_view);
-		TextView editText = (TextView) view.findViewById(R.id.brick_set_text_edit_text);
-
-		getFormulaWithBrickField(BrickField.STRING).setTextFieldId(R.id.brick_set_text_edit_text);
-		getFormulaWithBrickField(BrickField.STRING).refreshTextField(view);
-
-		text.setVisibility(View.GONE);
-		editText.setVisibility(View.VISIBLE);
-		textX.setVisibility(View.GONE);
-		editX.setVisibility(View.VISIBLE);
-		textY.setVisibility(View.GONE);
-		editY.setVisibility(View.VISIBLE);
-
-		editText.setOnClickListener(this);
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_drone_set_text, null);
-
-		TextView posX = (TextView) prototypeView.findViewById(R.id.brick_set_text_prototype_text_view_x);
-		TextView posY = (TextView) prototypeView.findViewById(R.id.brick_set_text_prototype_text_view_y);
-
-		TextView text = (TextView) prototypeView.findViewById(R.id.brick_set_text_prototype_view);
-		TextView secondText = (TextView) prototypeView.findViewById(R.id.brick_set_text_seconds_text_view);
-
-		posX.setText(Utils.getNumberStringForBricks(BrickValues.X_POSITION));
-		posY.setText(Utils.getNumberStringForBricks(BrickValues.Y_POSITION));
-		text.setText(BrickValues.STRING_VALUE);
-		secondText.setText(BrickValues.STRING_VALUE);
-
-		return prototypeView;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_set_text_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView glideToLabel = (TextView) view.findViewById(R.id.brick_set_text_label);
-			TextView glideToSeconds = (TextView) view.findViewById(R.id.brick_set_text_seconds_text_view);
-			TextView glideToXTextView = (TextView) view.findViewById(R.id.brick_set_text_x);
-			TextView glideToYTextView = (TextView) view.findViewById(R.id.brick_set_text_y);
-			TextView editDuration = (TextView) view.findViewById(R.id.brick_set_text_edit_text);
-
-			TextView editX = (TextView) view.findViewById(R.id.brick_set_text_edit_text_x);
-			TextView editY = (TextView) view.findViewById(R.id.brick_set_text_edit_text_y);
-
-			glideToLabel.setTextColor(glideToLabel.getTextColors().withAlpha(alphaValue));
-			glideToSeconds.setTextColor(glideToSeconds.getTextColors().withAlpha(alphaValue));
-			glideToXTextView.setTextColor(glideToXTextView.getTextColors().withAlpha(alphaValue));
-			glideToYTextView.setTextColor(glideToYTextView.getTextColors().withAlpha(alphaValue));
-			editDuration.setTextColor(editDuration.getTextColors().withAlpha(alphaValue));
-
-			editDuration.getBackground().setAlpha(alphaValue);
-			editX.setTextColor(editX.getTextColors().withAlpha(alphaValue));
-			editX.getBackground().setAlpha(alphaValue);
-			editY.setTextColor(editY.getTextColors().withAlpha(alphaValue));
-			editY.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
-	public void onClick(View view) {
-		if (checkbox.getVisibility() == View.VISIBLE) {
-			return;
-		}
-		switch (view.getId()) {
-			case R.id.brick_set_text_edit_text_x:
-				FormulaEditorFragment.showFragment(view, this, BrickField.X_DESTINATION);
-				break;
-
-			case R.id.brick_set_text_edit_text_y:
-				FormulaEditorFragment.showFragment(view, this, BrickField.Y_DESTINATION);
-				break;
-
-			case R.id.brick_set_text_edit_text:
-				FormulaEditorFragment.showFragment(view, this, BrickField.STRING);
-				break;
-		}
-	}
-
-	@Override
+	/*@Override
 	public void showFormulaEditorToEditFormula(View view) {
 		FormulaEditorFragment.showFragment(view, this, BrickField.X_DESTINATION);
 	}
 
 	@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 
 	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {

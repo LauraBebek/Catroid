@@ -22,17 +22,8 @@
  */
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import org.catrobat.catroid.R;
 import org.catrobat.catroid.content.Sprite;
 
 import java.util.List;
@@ -49,56 +40,14 @@ public class StopAllSoundsBrick extends BrickBaseType {
 	}
 
 	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		view = View.inflate(context, R.layout.brick_stop_all_sounds, null);
-		view = getViewWithAlpha(alphaValue);
-		setCheckboxView(R.id.brick_stop_all_sounds_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-		return view;
-	}
-
-	@Override
 	public Brick copyBrickForSprite(Sprite sprite) {
 		StopAllSoundsBrick copyBrick = (StopAllSoundsBrick) clone();
 		return copyBrick;
 	}
 
 	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_stop_all_sounds_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-			this.alphaValue = alphaValue;
-
-			TextView textStop = (TextView) view.findViewById(R.id.brick_stop_all_sounds_label);
-			textStop.setTextColor(textStop.getTextColors().withAlpha(alphaValue));
-		}
-
-		return view;
-	}
-
-	@Override
 	public Brick clone() {
 		return new StopAllSoundsBrick();
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		return View.inflate(context, R.layout.brick_stop_all_sounds, null);
 	}
 
 	@Override

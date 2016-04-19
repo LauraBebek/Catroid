@@ -41,7 +41,7 @@ public class DronePlayLedAnimationBrick extends DroneBasicBrick {
 	}
 
 	@Override
-	protected String getBrickLabel(View view) {
-		return view.getResources().getString(R.string.brick_drone_play_led_animation);
+	public int getBrickLabel() {
+		return R.string.brick_drone_play_led_animation;
 	}
 }

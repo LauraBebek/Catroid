@@ -38,14 +38,11 @@ import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.Formula;
 import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
-import org.catrobat.catroid.utils.Utils;
 
 import java.util.List;
 
 public class SetSizeToBrick extends FormulaBrick {
 	private static final long serialVersionUID = 1L;
-
-	private transient View prototypeView;
 
 	public SetSizeToBrick() {
 		addAllowedBrickField(BrickField.SIZE);
@@ -70,78 +67,18 @@ public class SetSizeToBrick extends FormulaBrick {
 	}
 
 	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-
-		view = View.inflate(context, R.layout.brick_set_size_to, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_set_size_to_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-		TextView text = (TextView) view.findViewById(R.id.brick_set_size_to_prototype_text_view);
-		TextView edit = (TextView) view.findViewById(R.id.brick_set_size_to_edit_text);
-		getFormulaWithBrickField(BrickField.SIZE).setTextFieldId(R.id.brick_set_size_to_edit_text);
-		getFormulaWithBrickField(BrickField.SIZE).refreshTextField(view);
-		text.setVisibility(View.GONE);
-		edit.setVisibility(View.VISIBLE);
-		edit.setOnClickListener(this);
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_set_size_to, null);
-		TextView textSetSizeTo = (TextView) prototypeView.findViewById(R.id.brick_set_size_to_prototype_text_view);
-		textSetSizeTo.setText(Utils.getNumberStringForBricks(BrickValues.SET_SIZE_TO));
-		return prototypeView;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_set_size_to_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView textSize = (TextView) view.findViewById(R.id.brick_set_size_to_label);
-			TextView textPercent = (TextView) view.findViewById(R.id.brick_set_size_to_percent);
-			TextView editSize = (TextView) view.findViewById(R.id.brick_set_size_to_edit_text);
-			textSize.setTextColor(textSize.getTextColors().withAlpha(alphaValue));
-			textPercent.setTextColor(textPercent.getTextColors().withAlpha(alphaValue));
-			editSize.setTextColor(editSize.getTextColors().withAlpha(alphaValue));
-			editSize.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		sequence.addAction(sprite.getActionFactory().createSetSizeToAction(sprite,
 				getFormulaWithBrickField(BrickField.SIZE)));
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public void showFormulaEditorToEditFormula(View view) {
 		FormulaEditorFragment.showFragment(view, this, BrickField.SIZE);
 	}
 
 	@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

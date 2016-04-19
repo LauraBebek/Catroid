@@ -84,6 +84,7 @@ public final class Constants {
 	public static final String RASPI_BROADCAST_PREFIX = "#RASPI#";
 	public static final String RASPI_BROADCAST_INTERRUPT_PREFIX = RASPI_BROADCAST_PREFIX + "interrupt ";
 	public static final String OPENING_BRACE = "(";
+	public static final String CLOSING_BRACE = ")";
 
 	//Web:
 	public static final String BASE_URL_HTTPS = "https://share.catrob.at/pocketcode/";

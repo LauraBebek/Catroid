@@ -20,22 +20,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.catrobat.catroid.ui.adapter;
 
-import java.util.Set;
+package org.catrobat.catroid.content.bricks;
 
-public interface ActionModeActivityAdapterInterface {
-	void setSelectMode(int mode);
+import android.content.Context;
+import android.widget.ArrayAdapter;
 
-	int getSelectMode();
+public interface SpinnerBrick {
 
-	void setShowDetails(boolean showDetails);
+    ArrayAdapter<CharSequence> createArrayAdapter(Context context);
 
-	boolean getShowDetails();
+    void setSelectedSpinnerItem(int position);
 
-	int getAmountOfCheckedItems();
+    int getSelectedSpinnerItem();
 
-	Set<Integer> getCheckedItems();
+    int getLayoutId();
 
-	void clearCheckedItems();
+    int getSpinnerId();
 }

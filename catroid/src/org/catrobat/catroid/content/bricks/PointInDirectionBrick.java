@@ -22,31 +22,16 @@
  */
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import org.catrobat.catroid.R;
-import org.catrobat.catroid.common.BrickValues;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
-import org.catrobat.catroid.utils.Utils;
 
 import java.util.List;
 
 public class PointInDirectionBrick extends FormulaBrick {
 
 	private static final long serialVersionUID = 1L;
-
-	private transient View prototypeView;
 
 	public static enum Direction {
 		RIGHT(90), LEFT(-90), UP(0), DOWN(180);
@@ -89,81 +74,18 @@ public class PointInDirectionBrick extends FormulaBrick {
 	}
 
 	@Override
-	public View getView(final Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		view = View.inflate(context, R.layout.brick_point_in_direction, null);
-		view = getViewWithAlpha(alphaValue);
-		setCheckboxView(R.id.brick_point_in_direction_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView setAngleTextView = (TextView) view.findViewById(R.id.brick_point_in_direction_prototype_text_view);
-		TextView setAngleTextField = (TextView) view.findViewById(R.id.brick_point_in_direction_edit_text);
-
-		getFormulaWithBrickField(BrickField.DEGREES).setTextFieldId(R.id.brick_point_in_direction_edit_text);
-		getFormulaWithBrickField(BrickField.DEGREES).refreshTextField(view);
-
-		setAngleTextView.setVisibility(View.GONE);
-		setAngleTextField.setVisibility(View.VISIBLE);
-
-		setAngleTextField.setOnClickListener(this);
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_point_in_direction, null);
-		TextView setAngleTextView = (TextView) prototypeView
-				.findViewById(R.id.brick_point_in_direction_prototype_text_view);
-		setAngleTextView.setText(Utils.getNumberStringForBricks(BrickValues.POINT_IN_DIRECTION));
-		return prototypeView;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_point_in_direction_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView pointInDirectionLabel = (TextView) view.findViewById(R.id.brick_point_in_direction_label);
-			TextView pointInDirectionDegree = (TextView) view.findViewById(R.id.brick_point_in_direction_degree);
-			TextView setAngleTextView = (TextView) view.findViewById(R.id.brick_point_in_direction_edit_text);
-			pointInDirectionLabel.setTextColor(pointInDirectionLabel.getTextColors().withAlpha(alphaValue));
-			pointInDirectionDegree.setTextColor(pointInDirectionDegree.getTextColors().withAlpha(alphaValue));
-			setAngleTextView.setTextColor(setAngleTextView.getTextColors().withAlpha(alphaValue));
-			setAngleTextView.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		sequence.addAction(sprite.getActionFactory().createPointInDirectionAction(sprite,
 				getFormulaWithBrickField(BrickField.DEGREES)));
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public void showFormulaEditorToEditFormula(View view) {
 		FormulaEditorFragment.showFragment(view, this, BrickField.DEGREES);
 	}
 
 	@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

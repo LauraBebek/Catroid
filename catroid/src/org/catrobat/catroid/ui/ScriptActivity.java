@@ -52,9 +52,8 @@ import org.catrobat.catroid.drone.DroneServiceWrapper;
 import org.catrobat.catroid.drone.DroneStageActivity;
 import org.catrobat.catroid.stage.PreStageActivity;
 import org.catrobat.catroid.stage.StageActivity;
-import org.catrobat.catroid.ui.adapter.ActionModeActivityAdapterInterface;
 import org.catrobat.catroid.ui.adapter.BrickAdapter;
-import org.catrobat.catroid.ui.adapter.PrototypeBrickAdapter;
+import org.catrobat.catroid.ui.adapter.ScriptActivityAdapterInterface;
 import org.catrobat.catroid.ui.controller.BackPackListManager;
 import org.catrobat.catroid.ui.controller.LookController;
 import org.catrobat.catroid.ui.dragndrop.DragAndDropListView;
@@ -62,15 +61,15 @@ import org.catrobat.catroid.ui.fragment.AddBrickFragment;
 import org.catrobat.catroid.ui.fragment.BackPackLookFragment;
 import org.catrobat.catroid.ui.fragment.BackPackScriptFragment;
 import org.catrobat.catroid.ui.fragment.BackPackSoundFragment;
-import org.catrobat.catroid.ui.fragment.FormulaEditorCategoryListFragment;
 import org.catrobat.catroid.ui.fragment.FormulaEditorDataFragment;
 import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
+import org.catrobat.catroid.ui.fragment.FormulaEditorListFragment;
 import org.catrobat.catroid.ui.fragment.LookFragment;
 import org.catrobat.catroid.ui.fragment.NfcTagFragment;
 import org.catrobat.catroid.ui.fragment.ScriptActivityFragment;
 import org.catrobat.catroid.ui.fragment.ScriptFragment;
 import org.catrobat.catroid.ui.fragment.SoundFragment;
-import org.catrobat.catroid.ui.fragment.UserBrickElementEditorFragment;
+import org.catrobat.catroid.ui.fragment.UserBrickDataEditorFragment;
 
 import java.util.concurrent.locks.Lock;
 
@@ -79,7 +78,6 @@ public class ScriptActivity extends BaseActivity {
 	public static final int FRAGMENT_LOOKS = 1;
 	public static final int FRAGMENT_SOUNDS = 2;
 	public static final int FRAGMENT_NFCTAGS = 3;
-	public static final int USERBRICKS_PROTOTYPE_VIEW = 4;
 
 	public static final String EXTRA_FRAGMENT_POSITION = "org.catrobat.catroid.ui.fragmentPosition";
 
@@ -487,9 +485,6 @@ public class ScriptActivity extends BaseActivity {
 		}
 
 		if (keyCode == KeyEvent.KEYCODE_BACK && currentFragmentPosition == FRAGMENT_SCRIPTS) {
-			if (scriptFragment.getAdapter().isBackPackActionMode()) {
-				scriptFragment.getAdapter().setIsBackPackActionMode(false);
-			}
 			AddBrickFragment addBrickFragment = (AddBrickFragment) getFragmentManager().findFragmentByTag(AddBrickFragment.ADD_BRICK_FRAGMENT_TAG);
 			if (addBrickFragment == null || !addBrickFragment.isVisible()) {
 				scriptFragment.setBackpackMenuIsVisible(true);
@@ -558,14 +553,13 @@ public class ScriptActivity extends BaseActivity {
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		//Dismiss ActionMode without effecting checked items
 
 		FormulaEditorDataFragment formulaEditorDataFragment = (FormulaEditorDataFragment) getFragmentManager()
 				.findFragmentByTag(FormulaEditorDataFragment.USER_DATA_TAG);
 
 		if (formulaEditorDataFragment != null && formulaEditorDataFragment.isVisible()) {
 			ListAdapter adapter = formulaEditorDataFragment.getListAdapter();
-			((ActionModeActivityAdapterInterface) adapter).clearCheckedItems();
+			((ScriptActivityAdapterInterface) adapter).clearCheckedItems();
 			return super.dispatchKeyEvent(event);
 		}
 
@@ -581,16 +575,12 @@ public class ScriptActivity extends BaseActivity {
 
 		if (currentFragment != null && currentFragment.getActionModeActive()
 				&& event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-			if (scriptFragment != null && scriptFragment.getAdapter() != null && scriptFragment.getAdapter().isBackPackActionMode()) {
-				scriptFragment.getAdapter().setIsBackPackActionMode(false);
+			if (!(currentFragment instanceof ScriptFragment)) {
+				((ScriptActivityAdapterInterface) currentFragment.getListAdapter()).clearCheckedItems();
+			}else{
+				//ScriptFragment manages clear items itself.
+				((ScriptFragment)currentFragment).beforeCancelActionMode();
 			}
-			ListAdapter adapter;
-			if (currentFragment instanceof ScriptFragment) {
-				adapter = ((ScriptFragment) currentFragment).getAdapter();
-			} else {
-				adapter = currentFragment.getListAdapter();
-			}
-			((ActionModeActivityAdapterInterface) adapter).clearCheckedItems();
 		}
 
 		return super.dispatchKeyEvent(event);

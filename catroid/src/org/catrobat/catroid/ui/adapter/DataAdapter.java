@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class DataAdapter extends BaseAdapter implements ActionModeActivityAdapterInterface {
+public class DataAdapter extends BaseAdapter implements ScriptActivityAdapterInterface {
 	private Context context;
 	private List<UserList> spriteLists;
 	private List<UserList> projectLists;

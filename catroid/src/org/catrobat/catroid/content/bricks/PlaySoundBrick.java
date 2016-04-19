@@ -53,13 +53,12 @@ import org.catrobat.catroid.ui.fragment.SoundFragment.OnSoundInfoListChangedAfte
 
 import java.util.List;
 
-public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListener,
-		OnSoundInfoListChangedAfterNewListener {
+public class PlaySoundBrick extends BrickBaseType { //implements OnItemSelectedListener,
+	//	OnSoundInfoListChangedAfterNewListener {
 	private static final long serialVersionUID = 1L;
 
 	private SoundInfo sound;
 	private transient SoundInfo oldSelectedSound;
-	private transient AdapterView<?> adapterView;
 
 	public PlaySoundBrick() {
 	}
@@ -90,104 +89,6 @@ public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListe
 	}
 
 	@Override
-	public View getView(final Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-
-		view = View.inflate(context, R.layout.brick_play_sound, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_play_sound_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		final Spinner soundbrickSpinner = (Spinner) view.findViewById(R.id.playsound_spinner);
-
-		if (!(checkbox.getVisibility() == View.VISIBLE)) {
-			soundbrickSpinner.setClickable(true);
-			soundbrickSpinner.setEnabled(true);
-		} else {
-			soundbrickSpinner.setClickable(false);
-			soundbrickSpinner.setEnabled(false);
-		}
-
-		if (!(checkbox.getVisibility() == View.VISIBLE)) {
-			soundbrickSpinner.setOnItemSelectedListener(this);
-		}
-
-		final ArrayAdapter<SoundInfo> spinnerAdapter = createSoundAdapter(context);
-
-		SpinnerAdapterWrapper spinnerAdapterWrapper = new SpinnerAdapterWrapper(context, spinnerAdapter);
-
-		soundbrickSpinner.setAdapter(spinnerAdapterWrapper);
-
-		setSpinnerSelection(soundbrickSpinner);
-
-		return view;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_play_sound_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView playSoundLabel = (TextView) view.findViewById(R.id.brick_play_sound_label);
-			playSoundLabel.setTextColor(playSoundLabel.getTextColors().withAlpha(alphaValue));
-
-			Spinner lookbrickSpinner = (Spinner) view.findViewById(R.id.playsound_spinner);
-
-			ColorStateList color = playSoundLabel.getTextColors().withAlpha(alphaValue);
-			lookbrickSpinner.getBackground().setAlpha(alphaValue);
-			if (adapterView != null) {
-				((TextView) adapterView.getChildAt(0)).setTextColor(color);
-			}
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	private ArrayAdapter<SoundInfo> createSoundAdapter(Context context) {
-		ArrayAdapter<SoundInfo> arrayAdapter = new ArrayAdapter<SoundInfo>(context,
-				android.R.layout.simple_spinner_item);
-		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		SoundInfo dummySoundInfo = new SoundInfo();
-		dummySoundInfo.setTitle(context.getString(R.string.new_broadcast_message));
-		arrayAdapter.add(dummySoundInfo);
-		for (SoundInfo soundInfo : ProjectManager.getInstance().getCurrentSprite().getSoundList()) {
-			arrayAdapter.add(soundInfo);
-		}
-		return arrayAdapter;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		View prototypeView = View.inflate(context, R.layout.brick_play_sound, null);
-		Spinner playSoundSpinner = (Spinner) prototypeView.findViewById(R.id.playsound_spinner);
-		playSoundSpinner.setFocusableInTouchMode(false);
-		playSoundSpinner.setFocusable(false);
-		playSoundSpinner.setEnabled(false);
-
-		SpinnerAdapter playSoundSpinnerAdapter = createSoundAdapter(context);
-		playSoundSpinner.setAdapter(playSoundSpinnerAdapter);
-		setSpinnerSelection(playSoundSpinner);
-		return prototypeView;
-	}
-
-	@Override
 	public Brick clone() {
 		return new PlaySoundBrick();
 	}
@@ -196,8 +97,7 @@ public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListe
 		this.sound = soundInfo;
 	}
 
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View arg1, int position, long arg3) {
+	/*public void onItemSelected(AdapterView<?> parent, View arg1, int position, long arg3) {
 		if (position == 0) {
 			sound = null;
 		} else {
@@ -207,9 +107,8 @@ public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListe
 		adapterView = parent;
 	}
 
-	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
-	}
+	}*/
 
 	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
@@ -217,29 +116,18 @@ public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListe
 		return null;
 	}
 
-	private void setSpinnerSelection(Spinner spinner) {
-		if (ProjectManager.getInstance().getCurrentSprite().getSoundList().contains(sound)) {
-			oldSelectedSound = sound;
-			spinner.setSelection(ProjectManager.getInstance().getCurrentSprite().getSoundList().indexOf(sound) + 1, true);
-		} else {
-			if (spinner.getAdapter() != null && spinner.getAdapter().getCount() > 1) {
-				if (ProjectManager.getInstance().getCurrentSprite().getSoundList().indexOf(oldSelectedSound) >= 0) {
-					spinner.setSelection(ProjectManager.getInstance().getCurrentSprite().getSoundList()
-							.indexOf(oldSelectedSound) + 1, true);
-				} else {
-					spinner.setSelection(1, true);
-				}
-			} else {
-				spinner.setSelection(0, true);
-			}
-		}
-	}
-
 	public SoundInfo getSound() {
 		return sound;
 	}
 
-	private void setOnSoundInfoListChangedAfterNewListener(Context context) {
+	public SoundInfo getOldSoundInfo() {
+		return oldSelectedSound;
+	}
+
+	public void setOldSoundInfo(SoundInfo currentSound) {
+		this.oldSelectedSound = currentSound;
+	}
+	/*private void setOnSoundInfoListChangedAfterNewListener(Context context) {
 		ScriptActivity scriptActivity = (ScriptActivity) context;
 		SoundFragment soundFragment = (SoundFragment) scriptActivity.getFragment(ScriptActivity.FRAGMENT_SOUNDS);
 		if (soundFragment != null) {
@@ -348,6 +236,7 @@ public class PlaySoundBrick extends BrickBaseType implements OnItemSelectedListe
 	public void onSoundInfoListChangedAfterNew(SoundInfo soundInfo) {
 		sound = soundInfo;
 		oldSelectedSound = soundInfo;
+	}*/
 	}
 
 	@Override

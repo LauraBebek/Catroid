@@ -22,31 +22,17 @@
  */
 package org.catrobat.catroid.physics.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import org.catrobat.catroid.R;
-import org.catrobat.catroid.common.BrickValues;
 import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
-import org.catrobat.catroid.content.bricks.Brick;
 import org.catrobat.catroid.content.bricks.FormulaBrick;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
 
 import java.util.List;
 
 public class SetFrictionBrick extends FormulaBrick {
 	private static final long serialVersionUID = 1L;
-
-	private transient View prototypeView;
 
 	public SetFrictionBrick() {
 		addAllowedBrickField(BrickField.PHYSICS_FRICTION);
@@ -76,83 +62,12 @@ public class SetFrictionBrick extends FormulaBrick {
 	}
 
 	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-
-		view = View.inflate(context, R.layout.brick_physics_set_friction, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_set_friction_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView text = (TextView) view.findViewById(R.id.brick_set_friction_prototype_text_view);
-		TextView edit = (TextView) view.findViewById(R.id.brick_set_friction_edit_text);
-
-		getFormulaWithBrickField(BrickField.PHYSICS_FRICTION).setTextFieldId(R.id.brick_set_friction_edit_text);
-		getFormulaWithBrickField(BrickField.PHYSICS_FRICTION).refreshTextField(view);
-
-		text.setVisibility(View.GONE);
-		edit.setVisibility(View.VISIBLE);
-		edit.setOnClickListener(this);
-
-		return view;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_set_friction_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView textX = (TextView) view.findViewById(R.id.brick_set_friction_text_view);
-			TextView editX = (TextView) view.findViewById(R.id.brick_set_friction_edit_text);
-			textX.setTextColor(textX.getTextColors().withAlpha(alphaValue));
-			editX.setTextColor(editX.getTextColors().withAlpha(alphaValue));
-			editX.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_physics_set_friction, null);
-		TextView textFriction = (TextView) prototypeView.findViewById(R.id.brick_set_friction_prototype_text_view);
-		textFriction.setText(String.valueOf(BrickValues.PHYSIC_FRICTION * 100));
-		return prototypeView;
-	}
-
-	@Override
-	public void showFormulaEditorToEditFormula(View view) {
-		if (checkbox.getVisibility() == View.VISIBLE) {
-			return;
-		}
-		FormulaEditorFragment.showFragment(view, this, BrickField.PHYSICS_FRICTION);
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		sequence.addAction(sprite.getActionFactory().createSetFrictionAction(sprite,
 				getFormulaWithBrickField(BrickField.PHYSICS_FRICTION)));
 		return null;
 	}
 
-	@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
 	}
 }

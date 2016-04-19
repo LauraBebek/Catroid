@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class LookBaseAdapter extends ArrayAdapter<LookData> implements ActionModeActivityAdapterInterface {
+public class LookBaseAdapter extends ArrayAdapter<LookData> implements ScriptActivityAdapterInterface {
 
 	protected List<LookData> lookDataItems;
 	protected Context context;

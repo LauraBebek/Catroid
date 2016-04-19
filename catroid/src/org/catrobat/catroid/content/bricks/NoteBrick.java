@@ -22,28 +22,15 @@
  */
 package org.catrobat.catroid.content.bricks;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import org.catrobat.catroid.R;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.ui.fragment.FormulaEditorFragment;
 
 import java.util.List;
 
-public class NoteBrick extends FormulaBrick implements OnClickListener {
+public class NoteBrick extends FormulaBrick {
 	private static final long serialVersionUID = 1L;
-	private transient View prototypeView;
 
 	public NoteBrick() {
 		addAllowedBrickField(BrickField.NOTE);
@@ -63,77 +50,13 @@ public class NoteBrick extends FormulaBrick implements OnClickListener {
 	}
 
 	@Override
-	public View getView(final Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-
-		view = View.inflate(context, R.layout.brick_note, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_note_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView textHolder = (TextView) view.findViewById(R.id.brick_note_prototype_text_view);
-		TextView textField = (TextView) view.findViewById(R.id.brick_note_edit_text);
-		getFormulaWithBrickField(BrickField.NOTE).setTextFieldId(R.id.brick_note_edit_text);
-		getFormulaWithBrickField(BrickField.NOTE).refreshTextField(view);
-
-		textHolder.setVisibility(View.GONE);
-		textField.setVisibility(View.VISIBLE);
-		textField.setOnClickListener(this);
-
-		return view;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_note_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView noteLabel = (TextView) view.findViewById(R.id.brick_note_text_view);
-			TextView noteTextView = (TextView) view.findViewById(R.id.brick_note_edit_text);
-			noteLabel.setTextColor(noteLabel.getTextColors().withAlpha(alphaValue));
-			noteTextView.setTextColor(noteTextView.getTextColors().withAlpha(alphaValue));
-			noteTextView.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_note, null);
-		TextView textSpeak = (TextView) prototypeView.findViewById(R.id.brick_note_prototype_text_view);
-		textSpeak.setText(context.getString(R.string.brick_note_default_value));
-		return prototypeView;
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		return null;
 	}
 
 	@Override
-	public void showFormulaEditorToEditFormula(View view) {
-		FormulaEditorFragment.showFragment(view, this, BrickField.NOTE);
+	public Formula getFormula() {
+		return getFormulaWithBrickField(BrickField.NOTE);
 	}
 
-	@Override
-	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
 }

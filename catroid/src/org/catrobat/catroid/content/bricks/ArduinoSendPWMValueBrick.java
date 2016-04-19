@@ -44,7 +44,6 @@ import java.util.List;
 public class ArduinoSendPWMValueBrick extends FormulaBrick {
 
 	private static final long serialVersionUID = 1L;
-	private transient View prototypeView;
 
 	public ArduinoSendPWMValueBrick() {
 		addAllowedBrickField(BrickField.ARDUINO_ANALOG_PIN_NUMBER);
@@ -73,86 +72,7 @@ public class ArduinoSendPWMValueBrick extends FormulaBrick {
 				| getFormulaWithBrickField(BrickField.ARDUINO_ANALOG_PIN_VALUE).getRequiredResources();
 	}
 
-	@Override
-	public View getPrototypeView(Context context) {
-		prototypeView = View.inflate(context, R.layout.brick_arduino_send_analog, null);
-
-		TextView textSetPinNumber = (TextView) prototypeView.findViewById(R.id.brick_arduino_set_analog_pin_prototype_text_view);
-		textSetPinNumber.setText(String.valueOf(BrickValues.ARDUINO_PWM_INITIAL_PIN_NUMBER));
-		TextView textSetPinValue = (TextView) prototypeView.findViewById(R.id.brick_arduino_set_analog_value_prototype_text_view);
-		textSetPinValue.setText(String.valueOf(BrickValues.ARDUINO_PWM_INITIAL_PIN_VALUE));
-
-		return prototypeView;
-	}
-
-	@Override
-	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		if (view == null) {
-			alphaValue = 255;
-		}
-
-		view = View.inflate(context, R.layout.brick_arduino_send_analog, null);
-		view = getViewWithAlpha(alphaValue);
-
-		setCheckboxView(R.id.brick_arduino_send_analog_checkbox);
-
-		final Brick brickInstance = this;
-		checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checked = isChecked;
-				adapter.handleCheck(brickInstance, isChecked);
-			}
-		});
-
-		TextView textPinNumber = (TextView) view.findViewById(R.id.brick_arduino_set_analog_pin_prototype_text_view);
-		TextView editPinNumber = (TextView) view.findViewById(R.id.brick_arduino_set_analog_pin_edit_text);
-		getFormulaWithBrickField(BrickField.ARDUINO_ANALOG_PIN_NUMBER).setTextFieldId(R.id.brick_arduino_set_analog_pin_edit_text);
-		getFormulaWithBrickField(BrickField.ARDUINO_ANALOG_PIN_NUMBER).refreshTextField(view);
-
-		textPinNumber.setVisibility(View.GONE);
-		editPinNumber.setVisibility(View.VISIBLE);
-		editPinNumber.setOnClickListener(this);
-
-		TextView textPinValue = (TextView) view.findViewById(R.id.brick_arduino_set_analog_value_prototype_text_view);
-		TextView editPinValue = (TextView) view.findViewById(R.id.brick_arduino_set_analog_value_edit_text);
-		getFormulaWithBrickField(BrickField.ARDUINO_ANALOG_PIN_VALUE).setTextFieldId(R.id.brick_arduino_set_analog_value_edit_text);
-		getFormulaWithBrickField(BrickField.ARDUINO_ANALOG_PIN_VALUE).refreshTextField(view);
-
-		textPinValue.setVisibility(View.GONE);
-		editPinValue.setVisibility(View.VISIBLE);
-		editPinValue.setOnClickListener(this);
-
-		return view;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-		if (view != null) {
-			View layout = view.findViewById(R.id.brick_arduino_send_analog_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-
-			TextView textPinNumber = (TextView) view.findViewById(R.id.brick_arduino_set_analog_pin_text_view);
-			TextView textgPinValue = (TextView) view.findViewById(R.id.brick_arduino_set_analog_value_text_view);
-			TextView editPinNumber = (TextView) view.findViewById(R.id.brick_arduino_set_analog_pin_edit_text);
-			TextView editPinValue = (TextView) view.findViewById(R.id.brick_arduino_set_analog_value_edit_text);
-			textPinNumber.setTextColor(textPinNumber.getTextColors().withAlpha(alphaValue));
-			textgPinValue.setTextColor(textgPinValue.getTextColors().withAlpha(alphaValue));
-			editPinNumber.setTextColor(editPinNumber.getTextColors().withAlpha(alphaValue));
-			editPinNumber.getBackground().setAlpha(alphaValue);
-			editPinValue.setTextColor(editPinValue.getTextColors().withAlpha(alphaValue));
-			editPinValue.getBackground().setAlpha(alphaValue);
-
-			this.alphaValue = alphaValue;
-		}
-		return view;
-	}
-
-	@Override
+	/*@Override
 	public void onClick(View view) {
 		if (checkbox.getVisibility() == View.VISIBLE) {
 			return;
@@ -167,7 +87,7 @@ public class ArduinoSendPWMValueBrick extends FormulaBrick {
 				FormulaEditorFragment.showFragment(view, this, BrickField.ARDUINO_ANALOG_PIN_VALUE);
 				break;
 		}
-	}
+	}*/
 
 	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
@@ -177,11 +97,11 @@ public class ArduinoSendPWMValueBrick extends FormulaBrick {
 		return null;
 	}
 
-	public void showFormulaEditorToEditFormula(View view) {
+	/*public void showFormulaEditorToEditFormula(View view) {
 		FormulaEditorFragment.showFragment(view, this, BrickField.ARDUINO_ANALOG_PIN_NUMBER);
 	}
 
 	@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

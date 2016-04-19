@@ -21,12 +21,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.catrobat.catroid.content.bricks;
-
-import android.content.Context;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import org.catrobat.catroid.ProjectManager;
@@ -40,10 +34,8 @@ public class UserBrickParameter extends FormulaBrick {
 
 	private static final long serialVersionUID = 1L;
 
-	private UserScriptDefinitionBrickElement element;
-
-	private transient TextView textView;
-	private transient TextView prototypeView;
+	public int parameterIndex;
+	public String variableName;
 
 	private transient UserBrick parent;
 
@@ -97,19 +89,7 @@ public class UserBrickParameter extends FormulaBrick {
 				getFormulaWithBrickField(BrickField.VARIABLE), dataContainer.getUserVariable(variableName, sprite)));
 		return null;
 	}
-
-	@Override
-	public void showFormulaEditorToEditFormula(View view) {
-		FormulaEditorFragment.showFragment(view, this, BrickField.USER_BRICK);
-	}
-
-	@Override
-	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
-
-	public void setParent(UserBrick parent) {
-		this.parent = parent;
-	}
+}
 
 	public TextView getTextView() {
 		return textView;

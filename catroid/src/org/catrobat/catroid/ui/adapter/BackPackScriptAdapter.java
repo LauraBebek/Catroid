@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class BackPackScriptAdapter extends ArrayAdapter<String> implements ActionModeActivityAdapterInterface {
+public class BackPackScriptAdapter extends ArrayAdapter<String> implements ScriptActivityAdapterInterface {
 
 	protected SortedSet<Integer> checkedScriptGroups = new TreeSet<>();
 	private BackPackScriptFragment backPackScriptFragment;

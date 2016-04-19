@@ -34,25 +34,20 @@ import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.common.ScreenValues;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Script;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.content.StartScript;
 import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.Formula;
-import org.catrobat.catroid.formulaeditor.UserVariable;
-import org.catrobat.catroid.ui.BrickLayout;
 import org.catrobat.catroid.ui.dragndrop.DragAndDropListView;
 import org.catrobat.catroid.ui.fragment.UserBrickElementEditorFragment;
 import org.catrobat.catroid.utils.Utils;
@@ -60,19 +55,32 @@ import org.catrobat.catroid.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserScriptDefinitionBrick extends ScriptBrick implements OnClickListener {
+public class UserScriptDefinitionBrick extends ScriptBrick { //} implements OnClickListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final String LINE_BREAK = "linebreak";
 
 	private StartScript script;
+	private UserScriptDefinitionBrickElements userScriptDefinitionBrickElements;
 
-	@XStreamAlias("userBrickElements")
-	private List<UserScriptDefinitionBrickElement> userScriptDefinitionBrickElements;
+	private transient UserBrick brick; //TODO: remove this when bitmap is loaded differently (double reference)
 
-	public UserScriptDefinitionBrick() {
+	public UserScriptDefinitionBrick(UserBrick brick) {
 		this.script = new StartScript(true);
-		this.userScriptDefinitionBrickElements = new ArrayList<>();
+		this.brick = brick;
+		this.userScriptDefinitionBrickElements = new UserScriptDefinitionBrickElements();
+	}
+
+	public int getUserBrickId() {
+		return brick.getUserBrickId();
+	}
+
+	public void setUserBrick(UserBrick brick) {
+		this.brick = brick;
+	}
+
+	public UserBrick getBrick() {
+		return  brick;
 	}
 
 	public int getRequiredResources() {
@@ -89,11 +97,6 @@ public class UserScriptDefinitionBrick extends ScriptBrick implements OnClickLis
 
 	public void appendBrickToScript(Brick brick) {
 		this.getScriptSafe().addBrick(brick);
-	}
-
-	@Override
-	public CheckBox getCheckBox() {
-		return null;
 	}
 
 	@Override
@@ -120,205 +123,30 @@ public class UserScriptDefinitionBrick extends ScriptBrick implements OnClickLis
 	}
 
 	@Override
-	public View getView(final Context context, int brickId, final BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-
-		view = View.inflate(context, R.layout.brick_user_definition, null);
-		setCheckboxView(R.id.brick_user_definition_checkbox);
-		onLayoutChanged();
-
-		return view;
-	}
-
-	public void onLayoutChanged() {
-		Context context = view.getContext();
-
-		LinearLayout layout = (LinearLayout) view.findViewById(R.id.brick_user_definition_layout);
-		layout.setFocusable(false);
-		layout.setFocusableInTouchMode(false);
-		if (layout.getChildCount() > 0) {
-			layout.removeAllViews();
-		}
-
-		View userBrickPrototype = getUserBrickPrototypeView(context);
-		Bitmap brickImage = getBrickImage(userBrickPrototype);
-
-		ImageView preview = getBorderedPreview(brickImage);
-
-		TextView define = new TextView(context);
-		define.setTextAppearance(context, R.style.BrickText);
-		define.setText(context.getString(R.string.define).concat(" "));
-
-		layout.addView(define);
-		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) define.getLayoutParams();
-		params.gravity = Gravity.CENTER_VERTICAL;
-
-		// This stuff isn't being included by the style when I use setTextAppearance.
-		define.setFocusable(false);
-		define.setFocusableInTouchMode(false);
-		define.setClickable(true);
-
-		layout.setFocusable(false);
-		layout.setFocusableInTouchMode(false);
-		layout.setClickable(true);
-		preview.setClickable(true);
-		preview.setOnClickListener(this);
-		layout.setOnClickListener(this);
-		define.setOnClickListener(this);
-
-		layout.addView(preview);
-	}
-
-	private View getUserBrickPrototypeView(Context context) {
-		View prototypeView = View.inflate(context, R.layout.brick_user, null);
-		BrickLayout layout = (BrickLayout) prototypeView.findViewById(R.id.brick_user_flow_layout);
-		if (layout.getChildCount() > 0) {
-			layout.removeAllViews();
-		}
-
-		for (UserScriptDefinitionBrickElement element : getUserScriptDefinitionBrickElements()) {
-			TextView currentTextView;
-			if (element.isLineBreak()) {
-				continue;
-			} else if (element.isVariable()) {
-				currentTextView = new EditText(context);
-				currentTextView.setTextAppearance(context, R.style.BrickPrototypeTextView);
-				currentTextView.setText(String.valueOf(0d));
-				currentTextView.setVisibility(View.VISIBLE);
-			} else {
-				currentTextView = new TextView(context);
-				currentTextView.setTextAppearance(context, R.style.BrickText_Multiple);
-				currentTextView.setText(element.getText());
-			}
-
-			currentTextView.setFocusable(false);
-			currentTextView.setFocusableInTouchMode(false);
-			currentTextView.setClickable(false);
-			layout.addView(currentTextView);
-
-			if (element.isNewLineHint()) {
-				BrickLayout.LayoutParams params = (BrickLayout.LayoutParams) currentTextView.getLayoutParams();
-				params.setNewLine(true);
-				currentTextView.setLayoutParams(params);
-			}
-		}
-
-		return prototypeView;
-	}
-
-	private Bitmap getBrickImage(View view) {
-
-		boolean drawingCacheEnabled = view.isDrawingCacheEnabled();
-
-		view.setDrawingCacheEnabled(true);
-
-		view.measure(MeasureSpec.makeMeasureSpec(ScreenValues.SCREEN_WIDTH, MeasureSpec.EXACTLY), MeasureSpec
-				.makeMeasureSpec(
-						Utils.getPhysicalPixels(DragAndDropListView.WIDTH_OF_BRICK_PREVIEW_IMAGE, view.getContext()),
-						MeasureSpec.AT_MOST));
-		view.layout(0, 0, ScreenValues.SCREEN_WIDTH, view.getMeasuredHeight());
-
-		view.setDrawingCacheBackgroundColor(Color.TRANSPARENT);
-		view.buildDrawingCache(true);
-
-		if (view.getDrawingCache() == null) {
-			view.setDrawingCacheEnabled(drawingCacheEnabled);
-			return null;
-		}
-
-		Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-		view.setDrawingCacheEnabled(drawingCacheEnabled);
-
-		return bitmap;
-	}
-
-	public ImageView getBorderedPreview(final Bitmap bitmap) {
-		ImageView imageView = new ImageView(view.getContext());
-		imageView.setBackgroundColor(Color.TRANSPARENT);
-
-		int radius = 7;
-		Bitmap result = getWithBorder(radius, bitmap, Color.argb(Math.round(0.25f * 255), 0, 0, Math.round(0.1f * 255)));
-		imageView.setImageBitmap(result);
-
-		return imageView;
-	}
-
-	public Bitmap getWithBorder(int radius, Bitmap bitmap, int color) {
-
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		int borderedWidth = width + radius * 2;
-		int borderedHeight = height + radius * 2;
-
-		Bitmap toReturn = Bitmap.createBitmap(borderedWidth, borderedHeight, Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(toReturn);
-
-		Bitmap border = Bitmap.createBitmap(borderedWidth, borderedHeight, Bitmap.Config.ARGB_8888);
-		Canvas borderCanvas = new Canvas(border);
-
-		Bitmap alpha = bitmap.extractAlpha();
-
-		Paint paintBorder = new Paint();
-		paintBorder.setColor(Color.WHITE);
-		Paint paintBorder2 = new Paint();
-		paintBorder2.setColor(color);
-		Paint paint = new Paint();
-
-		borderCanvas.drawBitmap(alpha, 0, 0, paintBorder);
-		borderCanvas.drawBitmap(alpha, radius * 2, 0, paintBorder);
-		borderCanvas.drawBitmap(alpha, 0, radius * 2, paintBorder);
-		borderCanvas.drawBitmap(alpha, radius * 2, radius * 2, paintBorder);
-
-		alpha = border.extractAlpha();
-
-		canvas.drawBitmap(alpha, 0, 0, paintBorder2);
-		canvas.drawBitmap(bitmap, radius, radius, paint);
-
-		return toReturn;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-		LinearLayout layout = (LinearLayout) view.findViewById(R.id.brick_user_definition_layout);
-		Drawable background = layout.getBackground();
-		background.setAlpha(alphaValue);
-		this.alphaValue = alphaValue;
-		return view;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		return getView(context, 0, null);
-	}
-
-	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
 		return null;
 	}
 
 	@Override
-	public void onClick(View eventOrigin) {
-		if (checkbox.getVisibility() == View.VISIBLE) {
-			return;
-		}
-
-		UserBrickElementEditorFragment.showFragment(view, this);
-	}
-
-	@Override
 	public Brick clone() {
-		return new UserScriptDefinitionBrick();
+		return new UserScriptDefinitionBrick(brick);
 	}
 
 	@Override
 	public Script getScriptSafe() {
+		if (getUserScript() == null) {
+			script.addBrick(this);
+		}
+
 		return getUserScript();
 	}
 
 	public Script getUserScript() {
 		return script;
+	}
+
+	public void setUserScript(StartScript script) {
+		this.script = script;
 	}
 
 	public int addUIText(String text) {

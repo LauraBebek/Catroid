@@ -24,9 +24,13 @@ package org.catrobat.catroid.content.actions;
 
 import android.util.Log;
 
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 
 import org.catrobat.catroid.content.Sprite;
+import org.catrobat.catroid.devices.raspberrypi.RPiSocketConnection;
+import org.catrobat.catroid.devices.raspberrypi.RaspberryPiService;
 import org.catrobat.catroid.formulaeditor.Formula;
 import org.catrobat.catroid.formulaeditor.InterpretationException;
 
@@ -55,5 +59,86 @@ public class WaitAction extends TemporalAction {
 
 	@Override
 	protected void update(float percent) {
+	}
+
+	public static class RaspiIfLogicAction extends Action {
+
+		private static final String TAG = RaspiIfLogicAction.class.getSimpleName();
+
+		private Sprite sprite;
+		private Action ifAction;
+		private Action elseAction;
+		private boolean isInitialized = false;
+		private Formula pinNumber;
+		private int pin;
+
+		public void setPinNumber(Formula pinNumber) {
+			this.pinNumber = pinNumber;
+		}
+
+		protected void begin() {
+			Integer pinNumberInterpretation;
+
+			try {
+				pinNumberInterpretation = pinNumber == null ? Integer.valueOf(0) : pinNumber.interpretInteger(sprite);
+			} catch (InterpretationException interpretationException) {
+				pinNumberInterpretation = 0;
+				Log.e(TAG, "Formula interpretation for this specific Brick failed.",
+						interpretationException);
+			}
+			this.pin = pinNumberInterpretation;
+		}
+
+		@Override
+		public boolean act(float delta) {
+			if (!isInitialized) {
+				begin();
+				isInitialized = true;
+			}
+
+			if (readIfConditionValue()) {
+				return ifAction.act(delta);
+			} else {
+				return elseAction.act(delta);
+			}
+		}
+
+		protected boolean readIfConditionValue() {
+			RPiSocketConnection connection = RaspberryPiService.getInstance().connection;
+			try {
+				Log.d(TAG, "RPi get " + pin);
+				return connection.getPin(pin);
+			} catch (Exception e) {
+				Log.e(TAG, "RPi: exception during getPin: " + e);
+			}
+			return false;
+		}
+
+		@Override
+		public void restart() {
+			ifAction.restart();
+			elseAction.restart();
+			isInitialized = false;
+			super.restart();
+		}
+
+		public void setSprite(Sprite sprite) {
+			this.sprite = sprite;
+		}
+
+		public void setIfAction(Action ifAction) {
+			this.ifAction = ifAction;
+		}
+
+		public void setElseAction(Action elseAction) {
+			this.elseAction = elseAction;
+		}
+
+		@Override
+		public void setActor(Actor actor) {
+			super.setActor(actor);
+			ifAction.setActor(actor);
+			elseAction.setActor(actor);
+		}
 	}
 }

@@ -23,6 +23,7 @@
 package org.catrobat.catroid.ui.fragment;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
@@ -148,6 +149,7 @@ public class CategoryBricksFactory {
 		List<Brick> tempList = new LinkedList<>();
 		List<Brick> toReturn = new ArrayList<>();
 		if (category.equals(context.getString(R.string.category_control))) {
+			Log.d("CategoryBricksFactory", "Control-TYPE");
 			tempList = setupControlCategoryList(context);
 		} else if (category.equals(context.getString(R.string.category_motion))) {
 			tempList = setupMotionCategoryList(sprite, context);

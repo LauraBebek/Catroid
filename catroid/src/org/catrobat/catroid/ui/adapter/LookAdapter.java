@@ -35,8 +35,7 @@ import org.catrobat.catroid.ui.fragment.LookFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LookAdapter extends LookBaseAdapter implements ActionModeActivityAdapterInterface,
-		LookController.OnBackpackLookCompleteListener {
+public class LookAdapter extends LookBaseAdapter implements ScriptActivityAdapterInterface,	LookController.OnBackpackLookCompleteListener {
 
 	private LookFragment lookFragment;
 

@@ -46,7 +46,7 @@ import org.catrobat.catroid.ui.fragment.SpritesListFragment;
 
 import java.util.List;
 
-public class SpriteAdapter extends SpriteBaseAdapter implements ActionModeActivityAdapterInterface {
+public class SpriteAdapter extends SpriteBaseAdapter implements ScriptActivityAdapterInterface {
 
 	SpritesListFragment spritesListFragment;
 

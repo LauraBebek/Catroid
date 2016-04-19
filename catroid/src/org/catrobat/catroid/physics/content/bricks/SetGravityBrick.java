@@ -46,8 +46,7 @@ import java.util.List;
 
 public class SetGravityBrick extends FormulaBrick {
 	private static final long serialVersionUID = 1L;
-
-	private transient View prototypeView;
+	//private transient View prototypeView;
 
 	public SetGravityBrick() {
 		addAllowedBrickField(BrickField.PHYSICS_GRAVITY_X);
@@ -74,7 +73,7 @@ public class SetGravityBrick extends FormulaBrick {
 		return PHYSICS;
 	}
 
-	@Override
+	/*@Override
 	public View getView(Context context, int brickId, BaseAdapter baseAdapter) {
 		if (animationState) {
 			return view;
@@ -167,7 +166,7 @@ public class SetGravityBrick extends FormulaBrick {
 			default:
 				// nothing to do
 		}
-	}
+	}*/
 
 	@Override
 	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
@@ -177,7 +176,7 @@ public class SetGravityBrick extends FormulaBrick {
 		return null;
 	}
 
-	@Override
+	//@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
 	}
 }

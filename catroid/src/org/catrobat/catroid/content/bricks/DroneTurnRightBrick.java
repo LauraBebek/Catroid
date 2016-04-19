@@ -58,7 +58,7 @@ public class DroneTurnRightBrick extends DroneMoveBrick {
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public void updateReferenceAfterMerge(Project into, Project from) {
-	}
+	}*/
 }

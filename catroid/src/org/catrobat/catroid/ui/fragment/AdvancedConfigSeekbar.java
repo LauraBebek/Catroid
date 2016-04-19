@@ -145,7 +145,8 @@ public class AdvancedConfigSeekbar {
 
 				switch (seekBar.getId()) {
 					case R.id.altitude_limit_seekbar:
-						FormulaEditorFragment.changeInputField(seekbarView, altitudeLimit);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(altitudeLimit));
 						changedBrickField = altitudeLimit;
 						if (seekBar.getProgress() < BrickValues.DRONE_ALTITUDE_MIN) {
 							FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(BrickValues.DRONE_ALTITUDE_MIN));
@@ -156,7 +157,8 @@ public class AdvancedConfigSeekbar {
 						}
 						break;
 					case R.id.vertical_speed_limit_seekbar:
-						FormulaEditorFragment.changeInputField(seekbarView, verticalSpeedLimit);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(verticalSpeedLimit));
 						changedBrickField = verticalSpeedLimit;
 						if (seekBar.getProgress() + BrickValues.DRONE_VERTICAL_MIN < BrickValues.DRONE_VERTICAL_MAX) {
 							FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(seekBar.getProgress() + BrickValues.DRONE_VERTICAL_MIN));
@@ -165,7 +167,8 @@ public class AdvancedConfigSeekbar {
 						}
 						break;
 					case R.id.rotation_speed_limit_seekbar:
-						FormulaEditorFragment.changeInputField(seekbarView, rotationSpeedLimit);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(rotationSpeedLimit));
 						changedBrickField = rotationSpeedLimit;
 						if (seekBar.getProgress() + BrickValues.DRONE_ROTATION_MIN < BrickValues.DRONE_ROTATION_MAX) {
 							FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(seekBar.getProgress() + BrickValues.DRONE_ROTATION_MIN));
@@ -174,7 +177,8 @@ public class AdvancedConfigSeekbar {
 						}
 						break;
 					case R.id.tilt_angle_limit_seekbar:
-						FormulaEditorFragment.changeInputField(seekbarView, tiltAngleLimit);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(tiltAngleLimit));
 						changedBrickField = tiltAngleLimit;
 						if (seekBar.getProgress() + BrickValues.DRONE_TILT_MIN < BrickValues.DRONE_TILT_MAX) {
 							FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(seekBar.getProgress() + BrickValues.DRONE_TILT_MIN));
@@ -187,8 +191,10 @@ public class AdvancedConfigSeekbar {
 				}
 //                FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(seekBar.getProgress()));
 				// ToDo: this is a hack for saving the value immediately
-				FormulaEditorFragment.changeInputField(seekbarView, getOtherField(changedBrickField));
-				FormulaEditorFragment.changeInputField(seekbarView, changedBrickField);
+				FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+						(getOtherField(changedBrickField)));
+				FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+						(changedBrickField));
 				// end of hack
 			}
 		};

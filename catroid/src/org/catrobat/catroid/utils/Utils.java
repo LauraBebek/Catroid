@@ -404,26 +404,6 @@ public final class Utils {
 		return stringToAdapt.replaceAll("[\"*/:<>?\\\\|]", "");
 	}
 
-	public static String getUniqueObjectName(String name) {
-		return searchForNonExistingObjectNameInCurrentProgram(name, 0);
-	}
-
-	private static String searchForNonExistingObjectNameInCurrentProgram(String name, int nextNumber) {
-		String newName;
-
-		if (nextNumber == 0) {
-			newName = name;
-		} else {
-			newName = name + nextNumber;
-		}
-
-		if (ProjectManager.getInstance().spriteExists(newName)) {
-			return searchForNonExistingObjectNameInCurrentProgram(name, ++nextNumber);
-		}
-
-		return newName;
-	}
-
 	public static String getUniqueNfcTagName(String name) {
 		return searchForNonExistingNfcTagName(name, 0);
 	}
@@ -441,6 +421,26 @@ public final class Utils {
 				return searchForNonExistingNfcTagName(name, ++nextNumber);
 			}
 		}
+		return newName;
+	}
+
+	public static String getUniqueObjectName(String name) {
+		return searchForNonExistingObjectNameInCurrentProgram(name, 0);
+	}
+
+	private static String searchForNonExistingObjectNameInCurrentProgram(String name, int nextNumber) {
+		String newName;
+
+		if (nextNumber == 0) {
+			newName = name;
+		} else {
+			newName = name + nextNumber;
+		}
+
+		if (ProjectManager.getInstance().spriteExists(newName)) {
+			return searchForNonExistingObjectNameInCurrentProgram(name, ++nextNumber);
+		}
+
 		return newName;
 	}
 

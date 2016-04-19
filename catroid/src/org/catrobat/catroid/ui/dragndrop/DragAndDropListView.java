@@ -32,6 +32,7 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,8 +43,6 @@ import android.widget.ListView;
 
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.common.ScreenValues;
-import org.catrobat.catroid.content.bricks.Brick;
-import org.catrobat.catroid.content.bricks.ScriptBrick;
 import org.catrobat.catroid.ui.adapter.BrickAdapter;
 import org.catrobat.catroid.utils.Utils;
 
@@ -117,21 +116,6 @@ public class DragAndDropListView extends ListView implements OnLongClickListener
 			BrickAdapter adapter = ((BrickAdapter) dragAndDropListener);
 			int itemPosition = pointToPosition(x, y);
 			itemPosition = itemPosition < 0 ? adapter.getCount() - 1 : itemPosition;
-			final Brick brick = (Brick) adapter.getItem(itemPosition);
-			if (adapter.isActionMode() && brick instanceof ScriptBrick) {
-				boolean checked = !brick.isChecked();
-				brick.setCheckedBoolean(checked);
-				brick.getCheckBox().setChecked(checked);
-
-				if (!checked) {
-					for (Brick currentBrick : adapter.getCheckedBricksFromScriptBrick((ScriptBrick) brick)) {
-						currentBrick.setCheckedBoolean(false);
-					}
-				}
-				adapter.handleCheck(brick, checked);
-				brick.getView(adapter.getContext(), itemPosition, adapter);
-				return true;
-			}
 		}
 
 		if (dragAndDropListener != null && dragView != null) {
@@ -169,7 +153,8 @@ public class DragAndDropListView extends ListView implements OnLongClickListener
 		}
 
 		int itemPosition = pointToPosition(x, y);
-		itemPosition = itemPosition < 0 ? ((BrickAdapter) dragAndDropListener).getCount() - 1 : itemPosition;
+		Log.d("DragAndDrop", "position: " + itemPosition);
+		itemPosition = itemPosition < 0 ? (((BrickAdapter) dragAndDropListener).getCount() - 1) : (itemPosition + 1);
 
 		if (touchedListPosition != itemPosition) {
 			touchedListPosition = itemPosition;
@@ -229,17 +214,17 @@ public class DragAndDropListView extends ListView implements OnLongClickListener
 
 	@Override
 	public boolean onLongClick(View view) {
+		int itemPosition = calculateItemPositionAndTouchPointY(position);
 
-		int itemPosition = calculateItemPositionAndTouchPointY(view);
 		boolean drawingCacheEnabled = view.isDrawingCacheEnabled();
 
 		view.setDrawingCacheEnabled(true);
+
 		view.measure(MeasureSpec.makeMeasureSpec(ScreenValues.SCREEN_WIDTH, MeasureSpec.EXACTLY), MeasureSpec
 				.makeMeasureSpec(Utils.getPhysicalPixels(WIDTH_OF_BRICK_PREVIEW_IMAGE, getContext()),
 						MeasureSpec.AT_MOST));
 		view.layout(0, 0, ScreenValues.SCREEN_WIDTH, view.getMeasuredHeight());
 		view.setDrawingCacheBackgroundColor(Color.TRANSPARENT);
-
 		view.buildDrawingCache(true);
 
 		Bitmap bitmap;
@@ -328,6 +313,44 @@ public class DragAndDropListView extends ListView implements OnLongClickListener
 		}
 	}
 
+	public boolean performDragging(View view, int position) {
+		int itemPosition = calculateItemPositionAndTouchPointY(position);
+
+		boolean drawingCacheEnabled = view.isDrawingCacheEnabled();
+
+		view.setDrawingCacheEnabled(true);
+
+		view.measure(MeasureSpec.makeMeasureSpec(ScreenValues.SCREEN_WIDTH, MeasureSpec.EXACTLY), MeasureSpec
+				.makeMeasureSpec(Utils.getPhysicalPixels(WIDTH_OF_BRICK_PREVIEW_IMAGE, getContext()),
+						MeasureSpec.AT_MOST));
+		view.layout(0, 0, ScreenValues.SCREEN_WIDTH, view.getMeasuredHeight());
+
+		view.setDrawingCacheBackgroundColor(Color.TRANSPARENT);
+		view.buildDrawingCache(true);
+
+		if (view.getDrawingCache() == null) {
+			view.setDrawingCacheEnabled(drawingCacheEnabled);
+			return false;
+		}
+
+		Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+		view.setDrawingCacheEnabled(drawingCacheEnabled);
+
+		startDragging(bitmap, touchPointY);
+
+		if (!dragNewBrick) {
+			setDragViewAnimation(0);
+			dragNewBrick = false;
+		}
+
+		dragAndDropListener.drag(itemPosition, itemPosition);
+		dimBackground = true;
+
+		previousItemPosition = itemPosition;
+
+		return true;
+	}
+
 	private void stopDragging() {
 		if (dragView != null) {
 			dragView.setVisibility(GONE);
@@ -366,20 +389,20 @@ public class DragAndDropListView extends ListView implements OnLongClickListener
 		return (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 	}
 
-	private int calculateItemPositionAndTouchPointY(View view) {
-		int itemPosition = -1;
+	private int calculateItemPositionAndTouchPointY(int itemPosition) {
 		int[] location = new int[2];
 
 		if (newView) {
 			itemPosition = this.position;
-			View tempView = getChildAt(getChildCount() - 1);
+			View tempView = (getChildAt(getChildCount() - 1));
 			if (tempView != null) {
 				tempView.getLocationOnScreen(location);
 				touchPointY = location[1] + (getChildAt(getChildCount() - 1)).getHeight();
 			}
 			newView = false;
+
 		} else {
-			itemPosition = pointToPosition(view.getLeft(), view.getTop());
+			//itemPosition = pointToPosition(view.getLeft(), view.getTop());
 			int visiblePosition = itemPosition - getFirstVisiblePosition();
 			(getChildAt(visiblePosition)).getLocationOnScreen(location);
 			touchPointY = location[1] + (getChildAt(visiblePosition)).getHeight() / 2;

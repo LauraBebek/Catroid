@@ -45,7 +45,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import org.catrobat.catroid.R;
-import org.catrobat.catroid.ui.adapter.ActionModeActivityAdapterInterface;
+import org.catrobat.catroid.ui.adapter.ScriptActivityAdapterInterface;
 import org.catrobat.catroid.ui.fragment.BackPackActivityFragment;
 import org.catrobat.catroid.ui.fragment.BackPackLookFragment;
 import org.catrobat.catroid.ui.fragment.BackPackScriptFragment;
@@ -232,7 +232,6 @@ public class BackPackActivity extends BaseActivity {
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		//Dismiss ActionMode without effecting checked items
 
 		if (currentFragment != null && currentFragment.getActionModeActive()
 				&& event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
@@ -242,9 +241,8 @@ public class BackPackActivity extends BaseActivity {
 			} else {
 				adapter = currentFragment.getListAdapter();
 			}
-			((ActionModeActivityAdapterInterface) adapter).clearCheckedItems();
+			((ScriptActivityAdapterInterface) currentFragment).clearCheckedItems();
 		}
-
 		return super.dispatchKeyEvent(event);
 	}
 

@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class SpriteBaseAdapter extends ArrayAdapter<Sprite> implements ActionModeActivityAdapterInterface {
+public class SpriteBaseAdapter extends ArrayAdapter<Sprite> implements ScriptActivityAdapterInterface {
 
 	protected static LayoutInflater inflater = null;
 	protected Context context;

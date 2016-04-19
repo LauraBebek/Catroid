@@ -44,6 +44,7 @@ import org.catrobat.catroid.content.Script;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.content.bricks.Brick;
 import org.catrobat.catroid.content.bricks.ScriptBrick;
+import org.catrobat.catroid.content.bricks.SpinnerBrick;
 import org.catrobat.catroid.physics.PhysicsCollision;
 
 import java.util.List;
@@ -91,106 +92,39 @@ public class CollisionReceiverBrick extends ScriptBrick implements BroadcastMess
 	}
 
 	@Override
-	public View getView(final Context context, int brickId, BaseAdapter baseAdapter) {
-		if (animationState) {
-			return view;
-		}
-		if (view == null) {
-			alphaValue = 255;
-		}
-		if (collisionScript == null) {
-			collisionScript = new CollisionScript(selectedMessage);
-			MessageContainer.addMessage(getBroadcastMessage());
-		}
-
-		view = View.inflate(context, R.layout.brick_physics_collision_receive, null);
-		view = getViewWithAlpha(alphaValue);
-		setCheckboxView(R.id.brick_collision_receive_checkbox);
-
-		final Spinner broadcastSpinner = (Spinner) view.findViewById(R.id.brick_collision_receive_spinner);
-		broadcastSpinner.setFocusableInTouchMode(false);
-		broadcastSpinner.setFocusable(false);
-		if (!(checkbox.getVisibility() == View.VISIBLE)) {
-			broadcastSpinner.setClickable(true);
-			broadcastSpinner.setEnabled(true);
-		} else {
-			broadcastSpinner.setClickable(false);
-			broadcastSpinner.setEnabled(false);
-		}
-
-		broadcastSpinner.setAdapter(getCollisionObjectAdapter(context));
-		broadcastSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String collisionObjectOneIdentifier = ProjectManager.getInstance().getCurrentSprite().getName();
-				String collisionObjectTwoIdentifier = broadcastSpinner.getSelectedItem().toString();
-				if (collisionObjectTwoIdentifier.equals(getDisplayedAnythingString(context))) {
-					collisionObjectTwoIdentifier = PhysicsCollision.COLLISION_WITH_ANYTHING_IDENTIFIER;
-				}
-				selectedMessage = collisionScript.setAndReturnBroadcastMessage(collisionObjectOneIdentifier, collisionObjectTwoIdentifier);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
-
-		setSpinnerSelection(broadcastSpinner);
-		return view;
-	}
-
-	public ArrayAdapter<String> getCollisionObjectAdapter(Context context) {
-		Project project = ProjectManager.getInstance().getCurrentProject();
-		String spriteName = ProjectManager.getInstance().getCurrentSprite().getName();
-		messageAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
-		messageAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		messageAdapter.add(getDisplayedAnythingString(context));
-		int resources = Brick.NO_RESOURCES;
-		for (Sprite sprite : project.getSpriteList()) {
-			if (!spriteName.equals(sprite.getName())) {
-				resources |= sprite.getRequiredResources();
-				if ((resources & Brick.PHYSICS) > 0 && messageAdapter.getPosition(sprite.getName()) < 0) {
-					messageAdapter.add(sprite.getName());
-					resources &= ~Brick.PHYSICS;
-				}
-			}
-		}
-		return messageAdapter;
-	}
-
-	@Override
-	public View getPrototypeView(Context context) {
-		View prototypeView = View.inflate(context, R.layout.brick_physics_collision_receive, null);
-		Spinner broadcastReceiverSpinner = (Spinner) prototypeView.findViewById(R.id.brick_collision_receive_spinner);
-		broadcastReceiverSpinner.setFocusableInTouchMode(false);
-		broadcastReceiverSpinner.setFocusable(false);
-		broadcastReceiverSpinner.setEnabled(false);
-		SpinnerAdapter collisionReceiverSpinnerAdapter = getCollisionObjectAdapter(context);
-		broadcastReceiverSpinner.setAdapter(collisionReceiverSpinnerAdapter);
-		setSpinnerSelection(broadcastReceiverSpinner);
-		return prototypeView;
-	}
-
-	@Override
-	public View getViewWithAlpha(int alphaValue) {
-
-		if (view != null) {
-
-			View layout = view.findViewById(R.id.brick_collision_receive_layout);
-			Drawable background = layout.getBackground();
-			background.setAlpha(alphaValue);
-			this.alphaValue = alphaValue;
-		}
-		return view;
-	}
-
-	@Override
 	public Script getScriptSafe() {
 		return collisionScript;
 	}
 
-	private void setSpinnerSelection(Spinner spinner) {
+	@Override
+	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
+		return null;
+	}
+
+	public void setSelectedMessage(String msg) {
+		this.selectedMessage = msg;
+	}
+
+	public void setCollisionScript(CollisionScript script) {
+		this.collisionScript = script;
+	}
+
+	public void initCollisionScript() {
+		if (collisionScript == null) {
+			collisionScript = new CollisionScript(selectedMessage);
+			MessageContainer.addMessage(getBroadcastMessage());
+		}
+	}
+
+	public CollisionScript getCollisionScript() {
+		return this.collisionScript;
+	}
+
+	public String getSelectedMessage() {
+		return this.selectedMessage;
+	}
+
+	public void setSpinnerSelection(Spinner spinner) {
 		String broadcastMessage = getBroadcastMessage();
 		if (broadcastMessage == null || broadcastMessage.equals("")) {
 			spinner.setSelection(0);
@@ -214,9 +148,23 @@ public class CollisionReceiverBrick extends ScriptBrick implements BroadcastMess
 		}
 	}
 
-	@Override
-	public List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence) {
-		return null;
+	public ArrayAdapter<String> getCollisionObjectAdapter(Context context) {
+		Project project = ProjectManager.getInstance().getCurrentProject();
+		String spriteName = ProjectManager.getInstance().getCurrentSprite().getName();
+		messageAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+		messageAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		messageAdapter.add(getDisplayedAnythingString(context));
+		int resources = Brick.NO_RESOURCES;
+		for (Sprite sprite : project.getSpriteList()) {
+			if (!spriteName.equals(sprite.getName())) {
+				resources |= sprite.getRequiredResources();
+				if ((resources & Brick.PHYSICS) > 0 && messageAdapter.getPosition(sprite.getName()) < 0) {
+					messageAdapter.add(sprite.getName());
+					resources &= ~Brick.PHYSICS;
+				}
+			}
+		}
+		return messageAdapter;
 	}
 
 	private String getDisplayedAnythingString(Context context) {

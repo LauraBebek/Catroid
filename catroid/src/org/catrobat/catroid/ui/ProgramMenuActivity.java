@@ -82,14 +82,15 @@ public class ProgramMenuActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
+		Log.d(TAG, "OnREsume");
 		super.onResume();
+
 		if (ProjectManager.getInstance().getCurrentSpritePosition() == 0) {
 			((Button) findViewById(R.id.program_menu_button_looks)).setText(R.string.backgrounds);
 		} else {
 			((Button) findViewById(R.id.program_menu_button_looks)).setText(R.string.looks);
 		}
 
-		//Hide NFC if option is not set
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (sharedPreferences.getBoolean("setting_nfc_bricks", false) && BuildConfig.FEATURE_NFC_ENABLED) {
 			findViewById(R.id.program_menu_button_nfctags).setVisibility(View.VISIBLE);

@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -56,6 +57,8 @@ import org.catrobat.catroid.io.StorageHandler;
 import org.catrobat.catroid.stage.StageActivity;
 import org.catrobat.catroid.test.utils.TestUtils;
 import org.catrobat.catroid.ui.BackPackActivity;
+import org.catrobat.catroid.ui.BrickLayout;
+import org.catrobat.catroid.ui.BrickView;
 import org.catrobat.catroid.ui.MainMenuActivity;
 import org.catrobat.catroid.ui.ScriptActivity;
 import org.catrobat.catroid.ui.SettingsActivity;
@@ -69,6 +72,7 @@ import org.catrobat.catroid.uitest.util.UiTestUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -132,7 +136,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		assertTrue("Bottom bar is visible", solo.getView(R.id.bottom_bar).getVisibility() == View.GONE);
 
-		solo.clickOnCheckBox(0);
+		UiTestUtils.clickOnBrickView(solo, 0); //solo.clickOnCheckBox(0);
 
 		String expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_copy,
 				brickList.size() + 1, brickList.size() + 1);
@@ -154,8 +158,8 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		assertTrue("Bottom bar is visible", solo.getView(R.id.bottom_bar).getVisibility() == View.GONE);
 
-		solo.clickOnCheckBox(1);
-		solo.clickOnCheckBox(2);
+		UiTestUtils.clickOnBrickView(solo, 1);
+		UiTestUtils.clickOnBrickView(solo, 2);
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
 
@@ -178,7 +182,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		String expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_copy, 0, 0);
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
 
-		solo.clickOnCheckBox(1);
+		UiTestUtils.clickOnBrickView(solo, 1);
 
 		expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_copy, 1, 1);
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
@@ -198,7 +202,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		UiTestUtils.getIntoScriptActivityFromMainMenu(solo);
 
 		UiTestUtils.openActionMode(solo, solo.getString(R.string.delete), R.id.delete, getActivity());
-		solo.clickOnCheckBox(0);
+		UiTestUtils.clickOnBrickView(solo, 0);
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
 		solo.clickOnButton(solo.getString(R.string.yes));
@@ -209,7 +213,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		solo.sleep(500);
 
 		UiTestUtils.openActionMode(solo, solo.getString(R.string.copy), R.id.copy, getActivity());
-		solo.clickOnCheckBox(1);
+		UiTestUtils.clickOnBrickView(solo, 1);
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
 
@@ -260,7 +264,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		solo.sleep(500);
 
 		UiTestUtils.openActionMode(solo, solo.getString(R.string.copy), R.id.copy, getActivity());
-		solo.clickOnCheckBox(1);
+		UiTestUtils.clickOnBrickView(solo, 1);
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
 
@@ -270,7 +274,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		assertEquals("No brick has been copied!", 2, numberOfBricks);
 
 		UiTestUtils.openActionMode(solo, solo.getString(R.string.copy), R.id.copy, getActivity());
-		solo.clickOnCheckBox(2);
+		UiTestUtils.clickOnBrickView(solo, 2);
 		UiTestUtils.acceptAndCloseActionMode(solo);
 
 		numberOfBricks = ProjectManager.getInstance().getCurrentProject().getSpriteList().get(0).getNumberOfBricks();
@@ -460,6 +464,8 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
 
 		UiTestUtils.clickOnCheckBox(solo, 1);
+		solo.clickOnView(solo.getView(R.id.brick_hide_layout));
+		UiTestUtils.clickOnCheckBox(solo, 1);
 
 		expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_delete, 1, 1);
 		assertTrue("Title not as expected" + expectedTitle, solo.waitForText(expectedTitle, 0, 300, false, true));
@@ -515,6 +521,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 	public void testDeleteActionModeAllBricks() {
 		UiTestUtils.createTestProjectWithEveryBrick();
 		UiTestUtils.getIntoScriptActivityFromMainMenu(solo);
+		ListView listview = UiTestUtils.getScriptListView(solo);
 
 		List<Brick> brickList = ProjectManager.getInstance().getCurrentProject().getSpriteList().get(0).getScript(0)
 				.getBrickList();
@@ -523,11 +530,23 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		assertTrue("Bottom bar is visible", solo.getView(R.id.bottom_bar).getVisibility() == View.GONE);
 
-		solo.clickOnCheckBox(0);
+		ArrayList<BrickView> brickViews = solo.getCurrentViews(BrickView.class);
 
-		for (int position = 1; position < brickList.size(); position++) {
-			assertEquals("AlphaValue of " + brickList.get(position).toString() + " is not 100", 100,
-					brickList.get(position).getAlphaValue());
+		//Click on when start brick.
+		solo.clickOnView(brickViews.get(0));
+		for (int position = 0; position < brickViews.size(); position++) {
+			BrickView brickView = brickViews.get(position);
+			assertTrue("View is not checked", brickView.isChecked());
+			for (View child : solo.getViews(brickView)) {
+				if (child instanceof BrickLayout) {
+					if (position > 0) {
+						assertEquals("View Alpha should be 1.0 for WhenStartBrick", 1.0f, child.getAlpha());
+					} else {
+						assertTrue("AlphaValue of View at position " + position + " is not less 1.0", 1.0f > brickView.getAlpha());
+					}
+					break;
+				}
+			}
 		}
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
@@ -548,11 +567,11 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		assertTrue("Bottom bar is visible", solo.getView(R.id.bottom_bar).getVisibility() == View.GONE);
 
-		solo.clickOnCheckBox(1);
-		solo.clickOnCheckBox(2);
+		UiTestUtils.clickOnBrickView(solo, 1);
+		UiTestUtils.clickOnBrickView(solo, 2);
 
-		solo.clickOnCheckBox(4);
-		solo.clickOnCheckBox(5);
+		UiTestUtils.clickOnBrickView(solo, 4);
+		UiTestUtils.clickOnBrickView(solo, 5);
 
 		UiTestUtils.acceptAndCloseActionMode(solo);
 		solo.clickOnButton(solo.getString(R.string.yes));
@@ -629,20 +648,20 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		assertTrue("Bottom bar is visible", solo.getView(R.id.bottom_bar).getVisibility() == View.GONE);
 
-		solo.clickOnCheckBox(2);
-		solo.clickOnCheckBox(5);
+		UiTestUtils.clickOnBrickView(solo, 2);
+		UiTestUtils.clickOnBrickView(solo, 5);
 		String expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_delete, 4,
 				4);
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
 
 		solo.sleep(500);
-		solo.clickOnCheckBox(5);
-		solo.clickOnCheckBox(2);
+		UiTestUtils.clickOnBrickView(solo, 5);
+		UiTestUtils.clickOnBrickView(solo, 2);
 		expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_delete, 0, 0);
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
 
 		solo.sleep(300);
-		solo.clickOnCheckBox(3);
+		UiTestUtils.clickOnBrickView(solo, 3);
 		expectedTitle = getActivity().getResources().getQuantityString(R.plurals.number_of_bricks_to_delete, 3, 3);
 		assertTrue("Title not as expected", solo.waitForText(expectedTitle, 0, 300, false, true));
 
@@ -846,13 +865,13 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		UiTestUtils.clickOnText(solo, selectAll);
 		assertFalse("Select All is still shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 0);
+		UiTestUtils.clickOnCheckBox(solo, 0);
 		assertTrue("Select All is not shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 1);
+		UiTestUtils.clickOnCheckBox(solo, 1);
 		assertTrue("Select All is not shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 0);
+		UiTestUtils.clickOnCheckBox(solo, 0);
 		assertFalse("Select All is still shown", solo.getView(R.id.select_all).isShown());
 
 		solo.goBack();
@@ -863,13 +882,13 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		UiTestUtils.clickOnText(solo, selectAll);
 		assertFalse("Select All is still shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 0);
+		UiTestUtils.clickOnCheckBox(solo, 0);
 		assertTrue("Select All is not shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 1);
+		UiTestUtils.clickOnCheckBox(solo, 1);
 		assertTrue("Select All is not shown", solo.getView(R.id.select_all).isShown());
 
-		UiTestUtils.clickOnListItem(solo, 0);
+		UiTestUtils.clickOnCheckBox(solo, 0);
 		assertFalse("Select All is still shown", solo.getView(R.id.select_all).isShown());
 	}
 
@@ -1053,7 +1072,7 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 
 		solo.clickOnCheckBox(0);
 		solo.sleep(TIME_TO_WAIT_BACKPACK);
-		solo.clickOnCheckBox(1);
+		UiTestUtils.clickOnCheckBox(solo, 1);
 		solo.sleep(800);
 		checkIfCheckboxesAreCorrectlyCheckedAndVisible(true, true);
 		solo.goBack();
@@ -1072,8 +1091,8 @@ public class ScriptFragmentTest extends BaseActivityInstrumentationTestCase<Main
 		String selectAll = solo.getString(R.string.select_all).toUpperCase(Locale.getDefault());
 		UiTestUtils.clickOnText(solo, selectAll);
 
-		for (Brick brick : ProjectManager.getInstance().getCurrentSprite().getListWithAllBricks()) {
-			assertTrue("CheckBox is not Checked!", brick.getCheckBox().isChecked());
+		for (CheckBox checkBox : solo.getCurrentViews(CheckBox.class)) {
+			assertTrue("CheckBox is not Checked!", checkBox.isChecked());
 		}
 		assertFalse("Select All is still shown", solo.waitForText(selectAll, 1, 200, false, true));
 

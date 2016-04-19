@@ -67,9 +67,10 @@ public class ReferenceHelper {
 	}
 
 	public Brick updateReference(Brick brick) {
-		if (brick instanceof FormulaBrick) {
-			((FormulaBrick) brick).updateReferenceAfterMerge(into, from);
-		}
+		//if (brick instanceof FormulaBrick) {
+			//((FormulaBrick) brick).updateReferenceAfterMerge(into, from);
+			// TODO: LAUSI CHECK THIS!
+		//}
 		return brick;
 	}
 }

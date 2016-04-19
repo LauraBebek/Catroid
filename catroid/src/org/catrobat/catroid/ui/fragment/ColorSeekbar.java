@@ -150,15 +150,18 @@ public class ColorSeekbar {
 
 				switch (seekBar.getId()) {
 					case R.id.color_rgb_seekbar_red:
-						FormulaEditorFragment.changeInputField(seekbarView, redField);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(redField));
 						changedBrickField = redField;
 						break;
 					case R.id.color_rgb_seekbar_green:
-						FormulaEditorFragment.changeInputField(seekbarView, greenField);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(greenField));
 						changedBrickField = greenField;
 						break;
 					case R.id.color_rgb_seekbar_blue:
-						FormulaEditorFragment.changeInputField(seekbarView, blueField);
+						FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+								(blueField));
 						changedBrickField = blueField;
 						break;
 					default:
@@ -166,8 +169,10 @@ public class ColorSeekbar {
 				}
 				FormulaEditorFragment.overwriteFormula(seekbarView, new Formula(seekBar.getProgress()));
 				// ToDo: this is a hack for saving the value immediately
-				FormulaEditorFragment.changeInputField(seekbarView, getOtherField(changedBrickField));
-				FormulaEditorFragment.changeInputField(seekbarView, changedBrickField);
+				FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+						(getOtherField(changedBrickField)));
+				FormulaEditorFragment.changeInputField(seekbarView, formulaBrick.getFormulaWithBrickField
+						(changedBrickField));
 				// end of hack
 			}
 		};

@@ -322,6 +322,9 @@ public class LookFragment extends ScriptActivityFragment implements LookBaseAdap
 			lookDataList = new ArrayList<>();
 		}
 
+		if (ProjectManager.getInstance() != null)
+			Log.d(TAG, "ProjectManager not null");
+
 		if (ProjectManager.getInstance().getCurrentSpritePosition() == 0) {
 			TextView emptyViewHeading = (TextView) activity.findViewById(R.id.fragment_look_text_heading);
 			emptyViewHeading.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60.0f);

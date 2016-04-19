@@ -97,6 +97,7 @@ public class FormulaEditorDataFragment extends ListFragment implements Dialog.On
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d("Lausi", "FormulaEditorDataFragment: onCreate");
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		initializeDataAdapter();

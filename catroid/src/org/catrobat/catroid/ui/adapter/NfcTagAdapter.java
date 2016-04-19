@@ -35,7 +35,7 @@ import org.catrobat.catroid.ui.fragment.NfcTagFragment;
 import java.util.Iterator;
 import java.util.List;
 
-public class NfcTagAdapter extends NfcTagBaseAdapter implements ActionModeActivityAdapterInterface {
+public class NfcTagAdapter extends NfcTagBaseAdapter implements ScriptActivityAdapterInterface {
 
 	private NfcTagFragment nfcTagFragment;
 
